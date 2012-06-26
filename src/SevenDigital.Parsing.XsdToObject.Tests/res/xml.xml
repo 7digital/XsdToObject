@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<vehicles>
+  <car>
+    <brand>BMW</brand>
+    <color>
+      <hue>black</hue>
+    </color>
+  </car>
+  <car>
+    <brand>Honda</brand>
+    <color>
+      <hue>red</hue>
+	  <rgb>0xff0000</rgb>
+    </color>
+  </car>
+</vehicles>

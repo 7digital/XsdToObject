@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="vehicles" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+  <xs:element name="vehicles" msdata:IsDataSet="true" msdata:Locale="en-US">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="car" type="car"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="car">
+	<xs:sequence>
+	  <xs:element name="brand" type="xs:string" minOccurs="0" />	  
+	  <xs:element name="color" minOccurs="1" maxOccurs="1">
+		<xs:complexType>
+		  <xs:sequence>
+			<xs:element name="hue" type="xs:string" minOccurs="0" />
+			<xs:element name="rgb" type="xs:decimal" minOccurs="0" />
+		  </xs:sequence>
+		</xs:complexType>
+	  </xs:element>
+	</xs:sequence>
+  </xs:complexType>
+</xs:schema>
