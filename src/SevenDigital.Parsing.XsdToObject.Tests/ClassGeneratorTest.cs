@@ -43,11 +43,12 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
         public void ShouldHaveColor()
         {
             ClassInfo color = _classes.Single(c => c.XmlName == "color");
-            Assert.That(color.Properties.Count, Is.EqualTo(3));
+            Assert.That(color.Properties.Count, Is.EqualTo(4));
 
             GeneratorAssertHelper.AssertStringProperty(color, "hue", false, "Hue");
             GeneratorAssertHelper.AssertStringProperty(color, "rgb", false, "Rgb");
             GeneratorAssertHelper.AssertBindedProperty(color, "Title", "Title_x", false, "Title", "Title_x");
+            GeneratorAssertHelper.AssertBindedProperty(color, "LabelName", "LabelName_x", false, "LabelName", "LabelName_x");
         }
 
 		[Test]
@@ -58,6 +59,16 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
 
 			Assert.That(title.Attributes, Contains.Item("TitleType"));
 		}
+
+		[Test]
+		public void Title_should_have_LabelName_property()
+		{
+			ClassInfo labelName = _classes.Single(c => c.XmlName == "LabelName_x");
+			Assert.That(labelName.Attributes.Count, Is.EqualTo(2));
+
+			Assert.That(labelName.Attributes, Contains.Item("LabelNameType"));
+		}
+
 
         [Test]
         public void ShouldVechiclesCarPropertyHaveBindedType()

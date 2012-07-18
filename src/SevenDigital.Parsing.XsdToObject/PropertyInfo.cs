@@ -7,8 +7,9 @@ namespace SevenDigital.Parsing.XsdToObject
         public string XmlType { get; set; }
         public bool IsList { get; set; }
         public ClassInfo BindedType { get; set; }
+    	public bool IsElementValue { get; set; }
 
-        public PropertyInfo(ClassInfo targetClass)
+    	public PropertyInfo(ClassInfo targetClass)
         {
             _targetClass = targetClass;
         }

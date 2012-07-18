@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Schema;
@@ -86,7 +85,7 @@ namespace SevenDigital.Parsing.XsdToObject
             var classInfo = new ClassInfo { XmlName = name };
             GenerateComplex(classInfo, type, nsCode);
 
-            if (classInfo.Properties.Count == 0)
+            if (classInfo.Properties.Count == 0 && classInfo.Attributes.Count == 0)
                 return false;
 
             _classes.Add(nsCode + name, classInfo);
@@ -105,7 +104,35 @@ namespace SevenDigital.Parsing.XsdToObject
 
 			if (complex.Attributes.Count > 0)
 				AddAttributes(classInfo, complex.Attributes);
+
+			AddExtensionAttributes(classInfo, complex);
         }
+
+    	void AddExtensionAttributes(ClassInfo classInfo, XmlSchemaComplexType complex)
+    	{
+    		if (complex.ContentModel != null
+    		    && complex.ContentModel.Content is XmlSchemaSimpleContentExtension)
+    		{
+    			var sce = complex.ContentModel.Content as XmlSchemaSimpleContentExtension;
+
+    			if (sce.Attributes.Count > 0)
+    			{
+    				AddAttributes(classInfo, sce.Attributes);
+
+
+
+					var propInfo = new PropertyInfo(classInfo)
+					{
+						IsList = false,
+						XmlName = "Value",
+						XmlType = "Value",
+						IsElementValue = true
+					};
+					if (!classInfo.Properties.Contains(propInfo))
+						classInfo.Properties.Add(propInfo);
+    			}
+    		}
+    	}
 
     	void AddAttributes(ClassInfo classInfo, XmlSchemaObjectCollection attributes)
     	{

@@ -48,5 +48,10 @@ namespace SevenDigital.Parsing.XsdToObject
                 return result;
             }
         }
+
+		public override string ToString()
+		{
+			return XmlName + "P:"+Properties.Count+"; A:"+Attributes.Count;
+		}
     }
 }

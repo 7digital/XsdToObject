@@ -7,6 +7,7 @@
       <Title TitleType="thisIsTheType">
         <TitleText>This is the text</TitleText>
       </Title>
+      <LabelName LabelNameType="MajorLabel">WM International - Phil Collins</LabelName>
     </color>
   </car>
   <car>
@@ -15,5 +16,6 @@
       <hue>red</hue>
 	  <rgb>0xff0000</rgb>
     </color>
+    <LabelName>WM UK</LabelName>
   </car>
 </vehicles>
