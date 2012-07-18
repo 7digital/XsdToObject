@@ -15,9 +15,23 @@
 		  <xs:sequence>
 			<xs:element name="hue" type="xs:string" minOccurs="0" />
 			<xs:element name="rgb" type="xs:decimal" minOccurs="0" />
+       <xs:element name="Title" type="Title_x" minOccurs="0" />
 		  </xs:sequence>
 		</xs:complexType>
 	  </xs:element>
 	</xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="Title_x">
+    <xs:sequence>
+      <xs:element name="TitleText" type="xs:string">
+      </xs:element>
+      <xs:element name="SubTitle" minOccurs="0" maxOccurs="unbounded" type="xs:string">
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="LanguageAndScriptCode" type="xs:string">
+    </xs:attribute>
+    <xs:attribute name="TitleType" type="xs:string">
+    </xs:attribute>
   </xs:complexType>
 </xs:schema>

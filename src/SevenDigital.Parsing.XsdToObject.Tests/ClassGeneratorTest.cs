@@ -13,7 +13,7 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
         [SetUp]
         public void SetUp()
         {
-            ClassGenerator generator = new ClassGenerator();
+            var generator = new ClassGenerator();
 
             using (Stream schemaStream = File.OpenRead(Path.Combine("res", "schema.xsd")))
                 generator.Generate(schemaStream);
@@ -43,12 +43,21 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
         public void ShouldHaveColor()
         {
             ClassInfo color = _classes.Single(c => c.XmlName == "color");
-            Assert.That(color.Properties.Count, Is.EqualTo(2));
+            Assert.That(color.Properties.Count, Is.EqualTo(3));
 
             GeneratorAssertHelper.AssertStringProperty(color, "hue", false, "Hue");
-            //decimal is not known
             GeneratorAssertHelper.AssertStringProperty(color, "rgb", false, "Rgb");
+            GeneratorAssertHelper.AssertBindedProperty(color, "Title", "Title_x", false, "Title", "Title_x");
         }
+
+		[Test]
+		public void Title_should_have_TitleType_property()
+		{
+			ClassInfo title = _classes.Single(c => c.XmlName == "Title_x");
+			Assert.That(title.Properties.Count, Is.EqualTo(2));
+
+			Assert.That(title.Attributes, Contains.Item("TitleType"));
+		}
 
         [Test]
         public void ShouldVechiclesCarPropertyHaveBindedType()

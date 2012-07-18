@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Schema;
@@ -36,7 +37,7 @@ namespace SevenDigital.Parsing.XsdToObject
 
         private IEnumerable<ClassInfo> GenerateUniqueClasses()
         {
-            List<ClassInfo> classes = new List<ClassInfo>();
+            var classes = new List<ClassInfo>();
             foreach (var classInfo in _classes.Values)
             {
                 RenameClassIfNecesarry(classInfo, classes);
@@ -82,7 +83,7 @@ namespace SevenDigital.Parsing.XsdToObject
 
         private bool GenerateType(XmlSchemaComplexType type, string name, string nsCode)
         {
-            ClassInfo classInfo = new ClassInfo { XmlName = name };
+            var classInfo = new ClassInfo { XmlName = name };
             GenerateComplex(classInfo, type, nsCode);
 
             if (classInfo.Properties.Count == 0)
@@ -101,11 +102,22 @@ namespace SevenDigital.Parsing.XsdToObject
         private void GenerateComplex(ClassInfo classInfo, XmlSchemaComplexType complex, string nsCode)
         {
             GenerateParticle(classInfo, complex.Particle, nsCode);
+
+			if (complex.Attributes.Count > 0)
+				AddAttributes(classInfo, complex.Attributes);
         }
 
-        private void GenerateParticle(ClassInfo classInfo, XmlSchemaParticle particle, string nsCode)
+    	void AddAttributes(ClassInfo classInfo, XmlSchemaObjectCollection attributes)
+    	{
+    		foreach (XmlSchemaAttribute attribute in attributes)
+    		{
+    			classInfo.Attributes.Add(attribute.Name);
+    		}
+    	}
+
+    	private void GenerateParticle(ClassInfo classInfo, XmlSchemaParticle particle, string nsCode)
         {
-            XmlSchemaGroupBase group = particle as XmlSchemaGroupBase;
+            var group = particle as XmlSchemaGroupBase;
             if (group == null)
                 return;
 
@@ -121,7 +133,7 @@ namespace SevenDigital.Parsing.XsdToObject
 
         private void GenerateElementProperty(ClassInfo classInfo, XmlSchemaElement elem, bool isList, string nsCode)
         {
-            PropertyInfo propInfo = new PropertyInfo(classInfo)
+            var propInfo = new PropertyInfo(classInfo)
             {
                 IsList = isList,
                 XmlName = elem.Name,

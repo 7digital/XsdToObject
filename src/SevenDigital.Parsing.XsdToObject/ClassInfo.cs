@@ -8,11 +8,14 @@ namespace SevenDigital.Parsing.XsdToObject
         public ClassInfo()
         {
             Properties = new List<PropertyInfo>();
+			Attributes = new List<string>();
         }
 
-        public string XmlName { get; set; }
-        public List<PropertyInfo> Properties { get; private set; }
+    	public string XmlName { get; set; }
         public int NameSuffix { get; set; }
+
+    	public List<string> Attributes { get; set; }
+        public List<PropertyInfo> Properties { get; private set; }
 
         public string GetCodeName()
         {

@@ -4,6 +4,9 @@
     <brand>BMW</brand>
     <color>
       <hue>black</hue>
+      <Title TitleType="thisIsTheType">
+        <TitleText>This is the text</TitleText>
+      </Title>
     </color>
   </car>
   <car>
