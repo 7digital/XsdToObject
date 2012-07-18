@@ -114,8 +114,10 @@ namespace SevenDigital.Parsing.XsdToObject
         {
             foreach (PropertyInfo property in classInfo.Properties)
 			{
-            	_writer.WriteLine("\t\tpublic {0} {1} {{ get; set; }}", property.GetCodeType(), property.GetCodeName());
-            }
+				if (property.IsElementValue) WriteImplicitStringCast(classInfo);
+
+				_writer.WriteLine("\t\tpublic {0} {1} {{ get; set; }}", property.GetCodeType(), property.GetCodeName());
+			}
 
         	foreach (string property in classInfo.Attributes)
         	{
@@ -123,5 +125,11 @@ namespace SevenDigital.Parsing.XsdToObject
         	}
         }
 
+    	void WriteImplicitStringCast(ClassInfo classInfo)
+    	{
+			_writer.WriteLine("\t\tpublic override string ToString(){return Value;}");
+			_writer.WriteLine("\t\tpublic static implicit operator string("+classInfo.GetCodeName()+" obj){return obj.Value;}");
+			_writer.WriteLine();
+    	}
     }
 }

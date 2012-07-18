@@ -50,6 +50,7 @@
   <ItemGroup>
     <Content Include="res\xml.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
