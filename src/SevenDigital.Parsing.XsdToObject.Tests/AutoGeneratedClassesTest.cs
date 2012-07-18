@@ -31,7 +31,6 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
 			Assert.That(car.Color.Hue, Is.EqualTo("black"));
 			Assert.That(car.Color.Rgb, Is.Null);
 
-
 			Assert.That(car.Color.Title.TitleText, Is.EqualTo("This is the text"));
 			Assert.That(car.Color.Title.TitleType, Is.EqualTo("thisIsTheType"));
 			Assert.That(car.Color.LabelName.LabelNameType, Is.EqualTo("MajorLabel"));
@@ -44,7 +43,8 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
 			Car car = _vehicles.Cars.Single(c => c.Brand == "Honda");
 			Assert.That(car.Color.Hue, Is.EqualTo("red"));
 			Assert.That(car.Color.Rgb, Is.EqualTo("0xff0000"));
-			Assert.That(car.Color.LabelName.Value, Is.Null);
+			Assert.That(car.Color.LabelName.LabelNameType, Is.Null);
+			Assert.That(car.Color.LabelName.Value, Is.EqualTo("WM UK"));
 		}
 	}
 }

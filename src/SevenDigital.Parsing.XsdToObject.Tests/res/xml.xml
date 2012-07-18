@@ -14,8 +14,8 @@
     <brand>Honda</brand>
     <color>
       <hue>red</hue>
-	  <rgb>0xff0000</rgb>
+      <rgb>0xff0000</rgb>
+      <LabelName>WM UK</LabelName>
     </color>
-    <LabelName>WM UK</LabelName>
   </car>
 </vehicles>
