@@ -34,39 +34,39 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
         {
             ClassInfo car = _classes.Single(c => c.XmlName == "car");
 
-            Assert.That(car.Properties.Count, Is.EqualTo(2));
+            Assert.That(car.Properties.Count, Is.EqualTo(3));
             GeneratorAssertHelper.AssertStringProperty(car, "brand", false, "Brand");
             GeneratorAssertHelper.AssertBindedProperty(car, "color", "color", false, "Color", "Color");
+			GeneratorAssertHelper.AssertBindedProperty(car, "manufacturer", "manufacturerName", false, "Manufacturer", "ManufacturerName");
         }
 
         [Test]
         public void ShouldHaveColor()
         {
             ClassInfo color = _classes.Single(c => c.XmlName == "color");
-            Assert.That(color.Properties.Count, Is.EqualTo(4));
+            Assert.That(color.Properties.Count, Is.EqualTo(3));
 
             GeneratorAssertHelper.AssertStringProperty(color, "hue", false, "Hue");
             GeneratorAssertHelper.AssertStringProperty(color, "rgb", false, "Rgb");
-            GeneratorAssertHelper.AssertBindedProperty(color, "Title", "Title_x", false, "Title", "Title_x");
-            GeneratorAssertHelper.AssertBindedProperty(color, "LabelName", "LabelName_x", false, "LabelName", "LabelName_x");
+            GeneratorAssertHelper.AssertBindedProperty(color, "description", "colorDescription", false, "Description", "ColorDescription");
         }
 
 		[Test]
 		public void Title_should_have_TitleType_property()
 		{
-			ClassInfo title = _classes.Single(c => c.XmlName == "Title_x");
+			ClassInfo title = _classes.Single(c => c.XmlName == "colorDescription");
 			Assert.That(title.Properties.Count, Is.EqualTo(2));
 
-			Assert.That(title.Attributes, Contains.Item("TitleType"));
+			Assert.That(title.Attributes, Contains.Item("descriptionType"));
 		}
 
 		[Test]
 		public void Title_should_have_LabelName_property()
 		{
-			ClassInfo labelName = _classes.Single(c => c.XmlName == "LabelName_x");
+			ClassInfo labelName = _classes.Single(c => c.XmlName == "manufacturerName");
 			Assert.That(labelName.Attributes.Count, Is.EqualTo(2));
 
-			Assert.That(labelName.Attributes, Contains.Item("LabelNameType"));
+			Assert.That(labelName.Attributes, Contains.Item("nameType"));
 		}
 
 

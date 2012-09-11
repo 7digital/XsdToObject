@@ -4,18 +4,18 @@
     <brand>BMW</brand>
     <color>
       <hue>black</hue>
-      <Title TitleType="thisIsTheType">
-        <TitleText>This is the text</TitleText>
-      </Title>
-      <LabelName LabelNameType="MajorLabel">WM International - Phil Collins</LabelName>
+      <description descriptionType="thisIsTheType">
+        <text>This is the text</text>
+      </description>      
     </color>
+	<manufacturer nameType="MajorType">BMW UK</manufacturer>
   </car>
   <car>
     <brand>Honda</brand>
     <color>
       <hue>red</hue>
-      <rgb>0xff0000</rgb>
-      <LabelName>WM UK</LabelName>
+      <rgb>0xff0000</rgb>      
     </color>
+    <manufacturer>UK Manufacturing Ltd</manufacturer>
   </car>
 </vehicles>

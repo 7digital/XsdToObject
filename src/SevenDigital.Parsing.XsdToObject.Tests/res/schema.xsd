@@ -10,39 +10,39 @@
   <xs:complexType name="car">
 	<xs:sequence>
 	  <xs:element name="brand" type="xs:string" minOccurs="0" />	  
+	  <xs:element name="manufacturer" type="manufacturerName" minOccurs="0" />
 	  <xs:element name="color" minOccurs="1" maxOccurs="1">
 		<xs:complexType>
 		  <xs:sequence>
 			<xs:element name="hue" type="xs:string" minOccurs="0" />
 			<xs:element name="rgb" type="xs:decimal" minOccurs="0" />
-       <xs:element name="Title" type="Title_x" minOccurs="0" />
-        <xs:element name="LabelName" type="LabelName_x" minOccurs="0" />
+			<xs:element name="description" type="colorDescription" minOccurs="0" />        
 		  </xs:sequence>
 		</xs:complexType>
 	  </xs:element>
 	</xs:sequence>
   </xs:complexType>
   
-  <xs:complexType name="Title_x">
+  <xs:complexType name="colorDescription">
     <xs:sequence>
-      <xs:element name="TitleText" type="xs:string">
+      <xs:element name="text" type="xs:string">
       </xs:element>
-      <xs:element name="SubTitle" minOccurs="0" maxOccurs="unbounded" type="xs:string">
+      <xs:element name="SubDescription" minOccurs="0" maxOccurs="unbounded" type="xs:string">
       </xs:element>
     </xs:sequence>
     <xs:attribute name="LanguageAndScriptCode" type="xs:string">
     </xs:attribute>
-    <xs:attribute name="TitleType" type="xs:string">
+    <xs:attribute name="descriptionType" type="xs:string">
     </xs:attribute>
   </xs:complexType>
 
 
-  <xs:complexType name="LabelName_x">
+  <xs:complexType name="manufacturerName">
     <xs:simpleContent>
       <xs:extension base="xs:string">
         <xs:attribute name="LanguageAndScriptCode" type="xs:string">
         </xs:attribute>
-        <xs:attribute name="LabelNameType" type="xs:string">
+        <xs:attribute name="nameType" type="xs:string">
         </xs:attribute>
       </xs:extension>
     </xs:simpleContent>
