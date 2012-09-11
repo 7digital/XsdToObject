@@ -50,7 +50,6 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
 		}
 
 		[Test]
-		[Ignore ("Not implemented yet")]
 		public void ShouldThrowMeaningfulExceptionWhenPropertyAccessedOnNullObject()
 		{
 			Car car = _vehicles.Cars.Single(c => c.Brand == "Honda");
@@ -61,6 +60,24 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
 				});
 
 			Assert.That(exception.Message, Is.EqualTo("Property 'Text' was accessed from a null 'ColorDescription' object"));
+		}
+
+		[Test]
+		public void ShouldTreatInvalidColorAsNull()
+		{
+			var invalid_description = _vehicles.Cars.Single(c => c.Brand == "Honda").Color.Description;
+
+			Assert.That(invalid_description == null);
+			Assert.That(null == invalid_description);
+		}
+
+		[Test]
+		public void ShouldNotTreatValidColorAsNull()
+		{
+			var description = _vehicles.Cars.Single(c => c.Brand == "BMW").Color.Description;
+
+			Assert.That(description != null);
+			Assert.That(null != description);
 		}
 	}
 }
