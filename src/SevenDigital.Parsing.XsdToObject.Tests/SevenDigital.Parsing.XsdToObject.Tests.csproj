@@ -78,8 +78,14 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="res\schema.xsc">
+      <DependentUpon>schema.xsd</DependentUpon>
+    </None>
     <None Include="res\schema.xsd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="res\schema.xss">
+      <DependentUpon>schema.xsd</DependentUpon>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 
 namespace SevenDigital.Parsing.XsdToObject
 {
@@ -120,7 +121,7 @@ namespace SevenDigital.Parsing.XsdToObject
 		private void GenerateParseConstructor(ClassInfo classInfo)
 		{
 			_writer.WriteLine("\t\tpublic {0}(XElement element){1}\t\t{{", classInfo.GetCodeName(), Environment.NewLine);
-			foreach (PropertyInfo property in classInfo.Properties)
+			foreach (PropertyInfo property in classInfo.Properties.Union(classInfo.Attributes))
 			{
 				var lastMethod = "SingleOrDefault()";
 				if (property.IsList)
@@ -130,10 +131,10 @@ namespace SevenDigital.Parsing.XsdToObject
 
 				GeneratePropertyInitialization(property, lastMethod);
 			}
-			foreach (string attr in classInfo.Attributes)
+		/*	foreach (PropertyInfo attr in )
 			{
-				GenerateAttributeInitialization(attr);
-			}
+				GenerateAttributeInitialization(attr.XmlName);
+			}*/
 			_writer.WriteLine("\t\t}");
 		}
 
@@ -152,12 +153,28 @@ namespace SevenDigital.Parsing.XsdToObject
 			}
 			else
 			{
-				_writer.WriteLine("\t\t\t{0} = element.Elements().Where(e => e.Name == \"{1}\").Select(e => {2}).{3};",
-								  property.GetCodeName(),
-								  property.XmlName,
-								  XElementToValue(property, "e"),
-								  chainLastMethod);
+				if (property.IsParsable) InitialiseByParse(property, chainLastMethod);
+				else InitialiseString(property, chainLastMethod);
 			}
+		}
+
+		void InitialiseByParse(PropertyInfo property, string chainLastMethod)
+		{
+			_writer.WriteLine("\t\t\t{0} = {4}.Parse(element.Elements().Where(e => e.Name == \"{1}\").Select(e => {2}).{3});",
+				property.GetCodeName(),
+				property.XmlName,
+				XElementToValue(property, "e"),
+				chainLastMethod,
+				property.XmlType);
+		}
+
+		void InitialiseString(PropertyInfo property, string chainLastMethod)
+		{
+			_writer.WriteLine("\t\t\t{0} = element.Elements().Where(e => e.Name == \"{1}\").Select(e => {2}).{3};",
+				property.GetCodeName(),
+				property.XmlName,
+				XElementToValue(property, "e"),
+				chainLastMethod);
 		}
 
 		private string XElementToValue(PropertyInfo property, string varName)
@@ -169,29 +186,24 @@ namespace SevenDigital.Parsing.XsdToObject
 
 		private void GenerateProperties(ClassInfo classInfo)
 		{
-			foreach (PropertyInfo property in classInfo.Properties)
+			foreach (var property in classInfo.Properties.Union(classInfo.Attributes))
 			{
 				if (property.IsElementValue) WriteImplicitStringCast(classInfo);
 
 				_writer.WriteLine("\t\tpublic virtual {0} {1} {{ get; set; }}", property.GetCodeType(), property.GetCodeName());
 			}
 
-			foreach (string property in classInfo.Attributes)
+			/*foreach (PropertyInfo property in )
 			{
-				_writer.WriteLine("\t\tpublic virtual string {0} {{ get; set; }}", NameUtils.ToCodeName(property, false));
-			}
+				_writer.WriteLine("\t\tpublic virtual string {0} {{ get; set; }}", NameUtils.ToCodeName(property.XmlName, false));
+			}*/
 		}
 
 		private void GenerateThrowingProperties(ClassInfo classInfo)
 		{
-			foreach (PropertyInfo property in classInfo.Properties)
+			foreach (PropertyInfo property in classInfo.Properties.Union(classInfo.Attributes))
 			{
 				_writer.WriteLine("\t\tpublic override {0} {1} {{ get {{ throw this.NullAccess(\"{1}\"); }} }}", property.GetCodeType(), property.GetCodeName());
-			}
-
-			foreach (string property in classInfo.Attributes)
-			{
-				_writer.WriteLine("\t\tpublic override string {0} {{ get {{ throw this.NullAccess(\"{0}\"); }} }}", NameUtils.ToCodeName(property, false));
 			}
 		}
 

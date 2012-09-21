@@ -57,7 +57,7 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
 			ClassInfo title = _classes.Single(c => c.XmlName == "colorDescription");
 			Assert.That(title.Properties.Count, Is.EqualTo(2));
 
-			Assert.That(title.Attributes, Contains.Item("descriptionType"));
+			Assert.That(title.Attributes.Select(a=>a.XmlName), Contains.Item("descriptionType"));
 		}
 
 		[Test]
@@ -66,7 +66,7 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
 			ClassInfo labelName = _classes.Single(c => c.XmlName == "manufacturerName");
 			Assert.That(labelName.Attributes.Count, Is.EqualTo(2));
 
-			Assert.That(labelName.Attributes, Contains.Item("nameType"));
+			Assert.That(labelName.Attributes.Select(a=>a.XmlName), Contains.Item("nameType"));
 		}
 
 

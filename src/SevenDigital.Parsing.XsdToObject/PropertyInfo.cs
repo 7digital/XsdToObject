@@ -5,6 +5,7 @@ namespace SevenDigital.Parsing.XsdToObject
         private readonly ClassInfo _targetClass;
         public string XmlName { get; set; }
         public string XmlType { get; set; }
+	    public bool IsParsable { get; set; }
         public bool IsList { get; set; }
         public ClassInfo BindedType { get; set; }
     	public bool IsElementValue { get; set; }
