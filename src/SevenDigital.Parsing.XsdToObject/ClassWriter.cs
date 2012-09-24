@@ -121,7 +121,7 @@ namespace SevenDigital.Parsing.XsdToObject
 		private void GenerateParseConstructor(ClassInfo classInfo)
 		{
 			_writer.WriteLine("\t\tpublic {0}(XElement element){1}\t\t{{", classInfo.GetCodeName(), Environment.NewLine);
-			foreach (PropertyInfo property in classInfo.Properties.Union(classInfo.Attributes))
+			foreach (PropertyInfo property in classInfo.Properties)
 			{
 				var lastMethod = "SingleOrDefault()";
 				if (property.IsList)
@@ -131,17 +131,30 @@ namespace SevenDigital.Parsing.XsdToObject
 
 				GeneratePropertyInitialization(property, lastMethod);
 			}
-		/*	foreach (PropertyInfo attr in )
+			foreach (PropertyInfo attr in classInfo.Attributes)
 			{
-				GenerateAttributeInitialization(attr.XmlName);
-			}*/
+				GenerateAttributeInitialization(attr);
+			}
 			_writer.WriteLine("\t\t}");
 		}
 
-		void GenerateAttributeInitialization(string attr)
+		void GenerateAttributeInitialization(PropertyInfo attr)
 		{
-			_writer.WriteLine("\t\t\t{0} = element.Attributes().Where(a => a.Name == \"{1}\").Select(a => a.Value).SingleOrDefault();",
-				NameUtils.ToCodeName(attr, false), attr);
+			if (attr.IsParsable)
+			{
+				_writer.WriteLine("\t\t\t{0} = {3}.Parse(element.Attributes().Where(a => a.Name == \"{1}\").Select(a => {2}).SingleOrDefault());",
+				attr.GetCodeName(),
+				attr.XmlName,
+				XElementToValue(attr, "a"),
+				attr.XmlType);
+				
+			}
+			else
+			{
+				_writer.WriteLine("\t\t\t{0} = element.Attributes().Where(a => a.Name == \"{1}\").Select(a => a.Value).SingleOrDefault();",
+				NameUtils.ToCodeName(attr.XmlName, false), attr.XmlName);
+			}
+			
 		}
 
 		private void GeneratePropertyInitialization(PropertyInfo property, string chainLastMethod)
