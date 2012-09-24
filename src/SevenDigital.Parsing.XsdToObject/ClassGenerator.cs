@@ -62,7 +62,7 @@ namespace SevenDigital.Parsing.XsdToObject
 
 		private void BindClasses()
 		{
-			foreach (var property in _classes.Values.SelectMany(c => c.Properties))
+			foreach (var property in _classes.Values.SelectMany(c => c.Elements))
 			{
 				ClassInfo classInfo;
 				property.BindedType = _classes.TryGetValue(property.XmlType, out classInfo) ? classInfo : null;
@@ -77,7 +77,7 @@ namespace SevenDigital.Parsing.XsdToObject
 
 		private void CleanUnknownClasses(ClassInfo classInfo)
 		{
-			foreach (var property in classInfo.Properties.Where(property => !_classes.ContainsKey(property.XmlType)))
+			foreach (var property in classInfo.Elements.Where(property => !_classes.ContainsKey(property.XmlType)))
 			{
 				property.XmlType = property.IsParsable
 					? property.XmlType
@@ -90,7 +90,7 @@ namespace SevenDigital.Parsing.XsdToObject
 			var classInfo = new ClassInfo { XmlName = name };
 			GenerateComplex(classInfo, type, nsCode);
 
-			if (classInfo.Properties.Count == 0 && classInfo.Attributes.Count == 0)
+			if (classInfo.Elements.Count == 0 && classInfo.Attributes.Count == 0)
 				return false;
 
 			_classes.Add(nsCode + name, classInfo);
@@ -133,8 +133,8 @@ namespace SevenDigital.Parsing.XsdToObject
 						XmlType = "Value",
 						IsElementValue = true
 					};
-					if (!classInfo.Properties.Contains(propInfo))
-						classInfo.Properties.Add(propInfo);
+					if (!classInfo.Elements.Contains(propInfo))
+						classInfo.Elements.Add(propInfo);
 				}
 			}
 		}
@@ -183,8 +183,8 @@ namespace SevenDigital.Parsing.XsdToObject
 			if (!generatedElement) 
 				TrySettingElementType(elem.SchemaType, elem.SchemaTypeName, propInfo);
 
-			if (!classInfo.Properties.Contains(propInfo))
-				classInfo.Properties.Add(propInfo);
+			if (!classInfo.Elements.Contains(propInfo))
+				classInfo.Elements.Add(propInfo);
 		}
 
 		void TrySettingElementType(XmlSchemaType schemaType, XmlQualifiedName schemaTypeName, PropertyInfo propInfo)

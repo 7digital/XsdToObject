@@ -7,7 +7,7 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
     {
         public static void AssertProperty(ClassInfo classInfo, string propXmlName, string xmlPropType, bool isList, string propertyName, string propertyType, bool hasBindedClass)
         {
-            var property = classInfo.Properties.Single(p => p.XmlName == propXmlName);
+            var property = classInfo.Elements.Single(p => p.XmlName == propXmlName);
             Assert.That(property.IsList, Is.EqualTo(isList), "List or not doesn't match");
             if (hasBindedClass)
                 Assert.That(property.XmlType.EndsWith("#" + xmlPropType), Is.True, "Property xml type doesn't match");

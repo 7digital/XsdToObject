@@ -7,7 +7,7 @@ namespace SevenDigital.Parsing.XsdToObject
     {
         public ClassInfo()
         {
-            Properties = new List<PropertyInfo>();
+            Elements = new List<PropertyInfo>();
 			Attributes = new List<PropertyInfo>();
         }
 
@@ -15,7 +15,7 @@ namespace SevenDigital.Parsing.XsdToObject
         public int NameSuffix { get; set; }
 
 		public List<PropertyInfo> Attributes { get; set; }
-        public List<PropertyInfo> Properties { get; private set; }
+        public List<PropertyInfo> Elements { get; private set; }
 
         public string GetCodeName()
         {
@@ -27,7 +27,7 @@ namespace SevenDigital.Parsing.XsdToObject
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(other.XmlName, XmlName) && Equals(other.Properties, Properties) && other.NameSuffix == NameSuffix;
+            return Equals(other.XmlName, XmlName) && Equals(other.Elements, Elements) && other.NameSuffix == NameSuffix;
         }
 
         public override bool Equals(object obj)
@@ -43,7 +43,7 @@ namespace SevenDigital.Parsing.XsdToObject
             unchecked
             {
                 int result = (XmlName != null ? XmlName.GetHashCode() : 0);
-                result = (result * 397) ^ (Properties != null ? Properties.GetHashCode() : 0);
+                result = (result * 397) ^ (Elements != null ? Elements.GetHashCode() : 0);
                 result = (result * 397) ^ NameSuffix;
                 return result;
             }
@@ -51,7 +51,7 @@ namespace SevenDigital.Parsing.XsdToObject
 
 		public override string ToString()
 		{
-			return XmlName + "P:"+Properties.Count+"; A:"+Attributes.Count;
+			return XmlName + "P:"+Elements.Count+"; A:"+Attributes.Count;
 		}
     }
 }

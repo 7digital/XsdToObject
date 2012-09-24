@@ -30,7 +30,7 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
 			ClassInfo detailsByTerritoryClass = _classes.Single(c => c.GetCodeName() == "ImageDetailsByTerritory");
 
 			Assert.That(
-				detailsByTerritoryClass.Properties.SingleOrDefault(p => p.XmlName == "TechnicalImageDetails"),
+				detailsByTerritoryClass.Elements.SingleOrDefault(p => p.XmlName == "TechnicalImageDetails"),
 				Is.Null);
 		}
 
@@ -73,11 +73,11 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
 		public void ShouldImageHaveImageDetailsByTerritory()
 		{
 			ClassInfo image = _classes.Single(c => c.XmlName == "Image");
-			var prop = image.Properties.Single(p => p.XmlName == "ImageDetailsByTerritory");
+			var prop = image.Elements.Single(p => p.XmlName == "ImageDetailsByTerritory");
 			var detailsByTerritoryClass = prop.BindedType;
 
 			Assert.That(
-				detailsByTerritoryClass.Properties.SingleOrDefault(p => p.XmlName == "TechnicalImageDetails"),
+				detailsByTerritoryClass.Elements.SingleOrDefault(p => p.XmlName == "TechnicalImageDetails"),
 				Is.Not.Null);
 		}
 	}
