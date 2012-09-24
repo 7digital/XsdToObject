@@ -220,10 +220,10 @@ namespace SevenDigital.Parsing.XsdToObject
 		{
 			switch (xmlTypeName.ToLower())
 			{
-				case "boolean": return "bool";
+				case "boolean": return "bool?";
 				case "integer":
 				case "int":
-					return "int";
+					return "int?";
 				default: return null;
 			}
 		}

@@ -54,7 +54,10 @@ namespace SevenDigital.Parsing.XsdToObject
 				);
 			if (IsParsable)
 			{
-				propertyInitialisationStatment = propertyEquals + string.Format("{0}.Parse({1})", XmlType, propertyInitialisationStatment);
+				return propertyEquals + string.Format("string.IsNullOrEmpty({0}) ? null : ({1}?){1}.Parse({0});",
+				propertyInitialisationStatment,
+				XmlType.TrimEnd('?')
+				);
 			}
 			else
 			{
