@@ -1,3 +1,5 @@
+using System;
+
 namespace SevenDigital.Parsing.XsdToObject
 {
     public class PropertyInfo
@@ -30,7 +32,47 @@ namespace SevenDigital.Parsing.XsdToObject
             return !IsList ? type : string.Format("IList<{0}>", type);
         }
 
-        private bool Equals(PropertyInfo other)
+		public string InitialiseFromCollection(string collectionName)
+		{
+			var propertyEquals = string.Format("\t\t\t{0} = ", GetCodeName());
+			if(IsElementValue)
+			{
+				return propertyEquals +"element.Value;";
+			}
+			var accessorMethod = "SingleOrDefault()";
+			if(BindedType != null)
+				accessorMethod = string.Format("SingleOrDefault() ?? new Null{0}()", GetCodeType());
+			if (IsList)
+				accessorMethod = "ToList()";
+
+			
+			var propertyInitialisationStatment = string.Format("element.{3}().Where(e => e.Name == \"{0}\").Select(e => {1}).{2}",
+				XmlName,
+				XElementToValue("e"),
+				accessorMethod,
+				collectionName
+				);
+			if (IsParsable)
+			{
+				propertyInitialisationStatment = propertyEquals + string.Format("{0}.Parse({1})", XmlType, propertyInitialisationStatment);
+			}
+			else
+			{
+				propertyInitialisationStatment = propertyEquals + propertyInitialisationStatment;
+			}
+
+			propertyInitialisationStatment += ";";
+			return propertyInitialisationStatment;
+		}
+
+		string XElementToValue(string varName)
+		{
+			return BindedType != null
+				? string.Format("new {0}({1})", BindedType.GetCodeName(), varName)
+				: string.Format("{0}.Value", varName);
+		}
+
+		private bool Equals(PropertyInfo other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;

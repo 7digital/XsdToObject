@@ -15,17 +15,17 @@ namespace SevenDigital.Parsing.XsdToObject
 			WriteNamespace(namespaceName);
 		}
 
-		private void WriteNamespace(string namespaceName)
+		void WriteNamespace(string namespaceName)
 		{
 			_writer.WriteLine("namespace {0}{1}{{", namespaceName, Environment.NewLine);
 		}
 
-		private void WriteNamespaceEnd()
+		void WriteNamespaceEnd()
 		{
 			_writer.Write("}");
 		}
 
-		private void WriteUsings()
+		void WriteUsings()
 		{
 			_writer.WriteLine("using System;");
 			_writer.WriteLine("using System.Collections.Generic;");
@@ -46,7 +46,7 @@ namespace SevenDigital.Parsing.XsdToObject
 			_writer = null;
 		}
 
-		private void WriteUtilityClasses()
+		void WriteUtilityClasses()
 		{
 			_writer.WriteLine(@"
 	internal static class Utils
@@ -71,28 +71,28 @@ namespace SevenDigital.Parsing.XsdToObject
 			WriteNullClass(classInfo);
 		}
 
-		private void WriteNullClass(ClassInfo classInfo)
+		void WriteNullClass(ClassInfo classInfo)
 		{
 			_writer.WriteLine("\tinternal class Null{0} : {0}{1}\t{{", classInfo.GetCodeName(), Environment.NewLine);
 			GenerateThrowingProperties(classInfo);
 			_writer.WriteLine("\t}}{0}", Environment.NewLine);
 		}
 
-		private void WriteOriginalClass(ClassInfo classInfo)
+		void WriteOriginalClass(ClassInfo classInfo)
 		{
 			_writer.WriteLine("\tpublic class {0}{1}\t{{", classInfo.GetCodeName(), Environment.NewLine);
 
-			GenerateProperties(classInfo);
+			WriteAutoProperties(classInfo);
 			_writer.WriteLine();
 
-			GenerateConstructors(classInfo);
+			WriteConstructors(classInfo);
 			_writer.WriteLine();
 
-			GenerateEqualityMembers(classInfo);
+			WriteEqualityMembers(classInfo);
 			_writer.WriteLine("\t}}{0}", Environment.NewLine);
 		}
 
-		private void GenerateEqualityMembers(ClassInfo classInfo)
+		void WriteEqualityMembers(ClassInfo classInfo)
 		{
 			_writer.WriteLine(
 @"		public static bool operator ==({0} left, {0} right)
@@ -106,19 +106,26 @@ namespace SevenDigital.Parsing.XsdToObject
 		}}", classInfo.GetCodeName());
 		}
 
-		private void GenerateConstructors(ClassInfo classInfo)
+		void WriteConstructors(ClassInfo classInfo)
 		{
-			new PropertySetter(_writer).GenerateParseConstructor(classInfo);
+			WriteXElementConstructor(classInfo, _writer);
 			_writer.WriteLine();
-			GenerateDefaultConstructor(classInfo);
+			WriteEmptyConstructor(classInfo);
 		}
 
-		private void GenerateDefaultConstructor(ClassInfo classInfo)
+		void WriteEmptyConstructor(ClassInfo classInfo)
 		{
 			_writer.WriteLine("\t\tpublic {0}(){1}\t\t{{ }}", classInfo.GetCodeName(), Environment.NewLine);
 		}
 
-		private void GenerateProperties(ClassInfo classInfo)
+		void WriteXElementConstructor(ClassInfo classInfo, StreamWriter writer)
+		{
+			writer.WriteLine("\t\tpublic {0}(XElement element){1}\t\t{{", classInfo.GetCodeName(), Environment.NewLine);
+			WritePropertyInitialisationStatements(classInfo, writer);
+			writer.WriteLine("\t\t}");
+		}
+
+		void WriteAutoProperties(ClassInfo classInfo)
 		{
 			foreach (var property in classInfo.Elements.Union(classInfo.Attributes))
 			{
@@ -126,14 +133,9 @@ namespace SevenDigital.Parsing.XsdToObject
 
 				_writer.WriteLine("\t\tpublic virtual {0} {1} {{ get; set; }}", property.GetCodeType(), property.GetCodeName());
 			}
-
-			/*foreach (PropertyInfo property in )
-			{
-				_writer.WriteLine("\t\tpublic virtual string {0} {{ get; set; }}", NameUtils.ToCodeName(property.XmlName, false));
-			}*/
 		}
 
-		private void GenerateThrowingProperties(ClassInfo classInfo)
+		void GenerateThrowingProperties(ClassInfo classInfo)
 		{
 			foreach (PropertyInfo property in classInfo.Elements.Union(classInfo.Attributes))
 			{
@@ -146,6 +148,18 @@ namespace SevenDigital.Parsing.XsdToObject
 			_writer.WriteLine("\t\tpublic override string ToString(){return Value;}");
 			_writer.WriteLine("\t\tpublic static implicit operator string(" + classInfo.GetCodeName() + " obj){return obj.Value;}");
 			_writer.WriteLine();
+		}
+
+		void WritePropertyInitialisationStatements(ClassInfo classInfo, StreamWriter writer)
+		{
+			foreach (PropertyInfo property in classInfo.Elements)
+			{
+				writer.WriteLine(property.InitialiseFromCollection("Elements"));
+			}
+			foreach (PropertyInfo property in classInfo.Attributes)
+			{
+				writer.WriteLine(property.InitialiseFromCollection("Attributes"));
+			}
 		}
 	}
 }
