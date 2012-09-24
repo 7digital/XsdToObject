@@ -33,10 +33,17 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
 			Assert.That(car.Color.Rgb, Is.Null);
 
 			Assert.That(car.Color.Description.Text, Is.EqualTo("This is the text"));
-			Assert.That(car.Color.Description.DescriptionType, Is.EqualTo("thisIsTheType"));
+			
 			Assert.That(car.Manufacturer.NameType, Is.EqualTo("MajorType"));
 
 			Assert.That((string)car.Manufacturer, Is.EqualTo("BMW UK"));
+		}
+
+		[Test]
+		public void The_bmw_should_have_the_expected_description_Type()
+		{
+			Car car = _vehicles.Cars.Single(c => c.Brand == "BMW");
+			Assert.That(car.Color.Description.DescriptionType, Is.EqualTo("thisIsTheType"));
 		}
 
 		[Test]
