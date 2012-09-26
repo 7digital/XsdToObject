@@ -80,7 +80,7 @@ namespace SevenDigital.Parsing.XsdToObject
 
 		void WriteOriginalClass(ClassInfo classInfo)
 		{
-			_writer.WriteLine("\tpublic class {0}{1}\t{{", classInfo.GetCodeName(), Environment.NewLine);
+			_writer.WriteLine("\tpublic partial class {0}{1}\t{{", classInfo.GetCodeName(), Environment.NewLine);
 
 			WriteAutoProperties(classInfo);
 			_writer.WriteLine();
