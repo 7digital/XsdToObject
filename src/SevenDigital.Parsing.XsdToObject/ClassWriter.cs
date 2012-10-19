@@ -129,7 +129,7 @@ namespace SevenDigital.Parsing.XsdToObject
 		{
 			foreach (var property in classInfo.Elements.Union(classInfo.Attributes))
 			{
-				if (property.IsElementValue) WriteImplicitStringCast(classInfo);
+				if (property.IsElementValue && property.XmlType == "string") WriteImplicitStringCast(classInfo);
 
 				_writer.WriteLine("\t\tpublic virtual {0} {1} {{ get; set; }}", property.GetCodeType(), property.GetCodeName());
 			}

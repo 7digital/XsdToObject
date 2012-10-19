@@ -9,7 +9,8 @@
   </xs:element>
   <xs:complexType name="car">
 	<xs:sequence>
-	  <xs:element name="brand" type="xs:string" minOccurs="0" />	  
+	  <xs:element name="brand" type="xs:string" minOccurs="0" />
+	  <xs:element name="productionDate" type="xs:date" minOccurs="0" />
 	  <xs:element name="manufacturer" type="manufacturerName" minOccurs="0" />
 	  <xs:element name="color" minOccurs="1" maxOccurs="1">
 		<xs:complexType>

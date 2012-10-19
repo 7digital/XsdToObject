@@ -119,20 +119,20 @@ namespace SevenDigital.Parsing.XsdToObject
 				&& complex.ContentModel.Content is XmlSchemaSimpleContentExtension)
 			{
 				var sce = complex.ContentModel.Content as XmlSchemaSimpleContentExtension;
-
+				
 				if (sce.Attributes.Count > 0)
 				{
 					AddAttributes(classInfo, sce.Attributes);
-
-
-
+					
 					var propInfo = new PropertyInfo(classInfo)
 					{
 						IsList = false,
 						XmlName = "Value",
-						XmlType = "Value",
+						XmlType = "string",
 						IsElementValue = true
 					};
+					TrySettingElementType(null,sce.BaseTypeName,propInfo);					
+
 					if (!classInfo.Elements.Contains(propInfo))
 						classInfo.Elements.Add(propInfo);
 				}
@@ -220,10 +220,15 @@ namespace SevenDigital.Parsing.XsdToObject
 		{
 			switch (xmlTypeName.ToLower())
 			{
-				case "boolean": return "bool?";
+				case "boolean": 
+					return "bool?";
 				case "integer":
 				case "int":
 					return "int?";
+				case "dateTime":
+					return "DateTime?";
+				case "date":
+					return "DateTime?";
 				default: return null;
 			}
 		}

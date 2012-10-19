@@ -34,10 +34,11 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
         {
             ClassInfo car = _classes.Single(c => c.XmlName == "car");
 
-            Assert.That(car.Elements.Count, Is.EqualTo(3));
+			Assert.That(car.Elements.Count, Is.EqualTo(4));
             GeneratorAssertHelper.AssertStringProperty(car, "brand", false, "Brand");
             GeneratorAssertHelper.AssertBindedProperty(car, "color", "color", false, "Color", "Color");
 			GeneratorAssertHelper.AssertBindedProperty(car, "manufacturer", "manufacturerName", false, "Manufacturer", "ManufacturerName");
+			GeneratorAssertHelper.AssertProperty(car, "productionDate", "DateTime?", false, "ProductionDate", "DateTime?",false);
         }
 
         [Test]

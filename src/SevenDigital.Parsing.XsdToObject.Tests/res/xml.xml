@@ -2,6 +2,7 @@
 <vehicles>
   <car>
     <brand>BMW</brand>
+	<productionDate>2008-10-25</productionDate>
     <color>
       <hue>black</hue>
       <description descriptionType="thisIsTheType">

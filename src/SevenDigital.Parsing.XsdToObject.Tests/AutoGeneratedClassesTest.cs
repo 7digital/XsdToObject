@@ -32,9 +32,10 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
 			Car car = _vehicles.Cars.Single(c => c.Brand == "BMW");
 			Assert.That(car.Color.Hue, Is.EqualTo("black"));
 			Assert.That(car.Color.Rgb, Is.Null);
+			Assert.That(car.ProductionDate, Is.EqualTo(new DateTime(2008, 10, 25)));
 
 			Assert.That(car.Color.Description.Text, Is.EqualTo("This is the text"));
-			
+
 			Assert.That(car.Manufacturer.NameType, Is.EqualTo("MajorType"));
 
 			Assert.That((string)car.Manufacturer, Is.EqualTo("BMW UK"));
