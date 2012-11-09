@@ -76,6 +76,12 @@ namespace SevenDigital.Parsing.XsdToObject
 				: string.Format("{0}.Value", varName);
 		}
 
+		public override string ToString()
+		{
+			return string.Format("XmlType: {0}, XmlName: {1}, IsList: {2}, IsElementValue: {3}", XmlType, XmlName, IsList, IsElementValue);
+		}
+
+		#region Equality members
 		private bool Equals(PropertyInfo other)
 		{
 			if (ReferenceEquals(null, other)) return false;
@@ -102,5 +108,6 @@ namespace SevenDigital.Parsing.XsdToObject
 				return result;
 			}
 		}
+		#endregion
 	}
 }

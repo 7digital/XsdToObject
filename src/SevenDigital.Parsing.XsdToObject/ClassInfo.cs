@@ -14,7 +14,6 @@ namespace SevenDigital.Parsing.XsdToObject
 
 		public string XmlName { get; set; }
 		public int NameSuffix { get; set; }
-
 		public List<PropertyInfo> Attributes { get; set; }
 		public List<PropertyInfo> Elements { get; private set; }
 		public IEnumerable<PropertyInfo> AllMembers { get { return Elements.Concat(Attributes); } }
@@ -25,6 +24,12 @@ namespace SevenDigital.Parsing.XsdToObject
 				+ ((NameSuffix == 0) ? "" : NameSuffix.ToString(CultureInfo.InvariantCulture));
 		}
 
+		public override string ToString()
+		{
+			return XmlName + "P:" + Elements.Count + "; A:" + Attributes.Count;
+		}
+
+		#region Equalifty members
 		private bool Equals(ClassInfo other)
 		{
 			if (ReferenceEquals(null, other)) return false;
@@ -50,10 +55,6 @@ namespace SevenDigital.Parsing.XsdToObject
 				return result;
 			}
 		}
-
-		public override string ToString()
-		{
-			return XmlName + "P:" + Elements.Count + "; A:" + Attributes.Count;
-		}
+		#endregion
 	}
 }
