@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="ClassGenerator.cs" />
     <Compile Include="ClassInfo.cs" />
+    <Compile Include="ClassParser.cs" />
     <Compile Include="ClassWriter.cs" />
     <Compile Include="NameUtils.cs" />
     <Compile Include="Program.cs" />

@@ -16,9 +16,9 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
             var generator = new ClassGenerator();
 
             using (Stream schemaStream = File.OpenRead(Path.Combine("res", "schema.xsd")))
-                generator.Generate(schemaStream);
+                generator.Parse(schemaStream);
 
-            _classes = generator.Create();
+            _classes = generator.Generate();
         }
 
         [Test]

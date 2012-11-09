@@ -26,12 +26,12 @@ namespace SevenDigital.Parsing.XsdToObject
             {
                 Console.WriteLine(" Parsing {0}...", file);
                 using (Stream stream = File.OpenRead(file))
-                    generator.Generate(stream);
+                    generator.Parse(stream);
             }
 
             Console.WriteLine(" Writing classes to {0}...", output);
             using (Stream stream = File.Open(output, FileMode.Create, FileAccess.Write))
-                WriteClasses(stream, generator.Create(), ns);
+                WriteClasses(stream, generator.Generate(), ns);
         }
 
         private static void WriteClasses(Stream stream, IEnumerable<ClassInfo> classes, string ns)
