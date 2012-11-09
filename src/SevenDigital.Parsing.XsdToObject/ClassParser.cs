@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace SevenDigital.Parsing.XsdToObject
 		public IDictionary<string, ClassInfo> GetParsedClasses()
 		{
 			var result = _classes;
-			_classes=new Dictionary<string, ClassInfo>();
+			_classes = new Dictionary<string, ClassInfo>();
 			return result;
 		}
 
@@ -33,22 +34,19 @@ namespace SevenDigital.Parsing.XsdToObject
 			return string.Format("{0}#", ns.GetHashCode());
 		}
 
-		private bool ParseType(XmlSchemaComplexType type, string name, string nsCode)
+		private void ParseType(XmlSchemaComplexType type, string name, string nsCode)
 		{
 			var classInfo = new ClassInfo { XmlName = name };
 			ParseComplex(classInfo, type, nsCode);
 
-			if (classInfo.Elements.Count == 0 && classInfo.Attributes.Count == 0)
-				return false;
-
-			_classes.Add(nsCode + name, classInfo);
-			return true;
+			if (classInfo.Elements.Count != 0 || classInfo.Attributes.Count != 0)
+				_classes.Add(nsCode + name, classInfo);
 		}
 
-		private bool ParseElement(XmlSchemaElement elem, string nsCode)
+		private void ParseElement(XmlSchemaElement elem, string nsCode)
 		{
-			return (elem.SchemaType is XmlSchemaComplexType) &&
-			       ParseType((XmlSchemaComplexType)elem.SchemaType, elem.Name, nsCode);
+			if (elem.SchemaType is XmlSchemaComplexType)
+				ParseType((XmlSchemaComplexType)elem.SchemaType, elem.Name, nsCode);
 		}
 
 		private void ParseComplex(ClassInfo classInfo, XmlSchemaComplexType complex, string nsCode)
@@ -64,7 +62,7 @@ namespace SevenDigital.Parsing.XsdToObject
 		private void AddExtensionAttributes(ClassInfo classInfo, XmlSchemaComplexType complex)
 		{
 			if (complex.ContentModel != null
-			    && complex.ContentModel.Content is XmlSchemaSimpleContentExtension)
+				&& complex.ContentModel.Content is XmlSchemaSimpleContentExtension)
 			{
 				var sce = complex.ContentModel.Content as XmlSchemaSimpleContentExtension;
 
@@ -76,10 +74,9 @@ namespace SevenDigital.Parsing.XsdToObject
 					{
 						IsList = false,
 						XmlName = "Value",
-						XmlType = "string",
+						XmlType = ResolveSimpleTypeName(sce.BaseTypeName.Name),
 						IsElementValue = true
 					};
-					TrySettingElementType(null, sce.BaseTypeName, propInfo);
 
 					if (!classInfo.Elements.Contains(propInfo))
 						classInfo.Elements.Add(propInfo);
@@ -95,8 +92,11 @@ namespace SevenDigital.Parsing.XsdToObject
 
 		private PropertyInfo PropertyFromAttribute(ClassInfo classInfo, XmlSchemaAttribute attribute)
 		{
-			var prop = new PropertyInfo(classInfo) { XmlName = attribute.Name, XmlType = "string" };
-			TrySettingElementType(attribute.SchemaType, attribute.SchemaTypeName, prop);
+			var prop = new PropertyInfo(classInfo)
+			{
+				XmlName = attribute.Name,
+				XmlType = ResolveSimpleTypeName(attribute.SchemaTypeName.Name)
+			};
 			return prop;
 		}
 
@@ -125,69 +125,43 @@ namespace SevenDigital.Parsing.XsdToObject
 				XmlType = ResolveTypeName(elem, nsCode)
 			};
 
-			var generatedElement = ParseElement(elem, nsCode);
-			if (!generatedElement)
-				TrySettingElementType(elem.SchemaType, elem.SchemaTypeName, propInfo);
+			ParseElement(elem, nsCode);
 
 			if (!classInfo.Elements.Contains(propInfo))
 				classInfo.Elements.Add(propInfo);
 		}
 
-		private void TrySettingElementType(XmlSchemaType schemaType, XmlQualifiedName schemaTypeName, PropertyInfo propInfo)
-		{
-			var guessedType = GuessXmlType(schemaTypeName);
-			var dotNetType = GuessParsableDotNetType(guessedType);
-
-			if (LooksLikeParsableSimpleType(guessedType, dotNetType))
-			{
-				propInfo.XmlType = dotNetType;
-				propInfo.IsParsable = true;
-			}
-			else if (schemaType != null)
-			{
-				propInfo.XmlType = "string";
-			}
-		}
-
-		private bool LooksLikeParsableSimpleType(string guessedType, string dotNetType)
-		{
-			return !string.IsNullOrEmpty(guessedType) && dotNetType != null;
-		}
-
-		private string GuessXmlType(XmlQualifiedName schemaTypeName)
-		{
-			if (schemaTypeName == null || schemaTypeName.Name == null) return null;
-			var name = schemaTypeName.Name;
-			int lc = name.LastIndexOf(':');
-			return lc <= 0 ? name : name.Substring(lc + 1);
-		}
-
-		private string GuessParsableDotNetType(string xmlTypeName)
-		{
-			switch (xmlTypeName.ToLower())
-			{
-				case "boolean":
-					return "bool?";
-				case "integer":
-				case "int":
-					return "int?";
-				case "dateTime":
-					return "DateTime?";
-				case "date":
-					return "DateTime?";
-				default: return null;
-			}
-		}
-
 		private string ResolveTypeName(XmlSchemaElement elem, string nsCode)
 		{
 			if (elem.SchemaType != null)
-				return nsCode + elem.Name;
+			{
+				if (elem.SchemaType is XmlSchemaSimpleType)
+					return ResolveSimpleTypeName(elem.Name);
+
+				return ResolveTypeName(elem.Name, nsCode);
+			}
 
 			if (!elem.SchemaTypeName.IsEmpty)
-				return (GenerateNSCode(elem.SchemaTypeName.Namespace ?? "") + elem.SchemaTypeName.Name);
+				return ResolveTypeName(elem.SchemaTypeName);
 
-			return elem.Name;
+			throw new ArgumentException("XmlSchemaElement does not have SchemaType nor SchemaTypeName.");
+		}
+
+		private string ResolveSimpleTypeName(string name)
+		{
+			return TypeUtils.IsParsable(name) ? name : "string";
+		}
+
+		private string ResolveTypeName(string name, string nsCode)
+		{
+			if (TypeUtils.IsSimpleType(name))
+				return name;
+			return nsCode + name;
+		}
+
+		private string ResolveTypeName(XmlQualifiedName name)
+		{
+			return ResolveTypeName(name.Name, (GenerateNSCode(name.Namespace ?? "")));
 		}
 	}
 }

@@ -48,7 +48,7 @@ namespace SevenDigital.Parsing.XsdToObject
 
 		private void BindClasses(IDictionary<string, ClassInfo> classes)
 		{
-			foreach (var property in classes.Values.SelectMany(c => c.Elements))
+			foreach (var property in classes.Values.SelectMany(c => c.AllMembers))
 			{
 				ClassInfo classInfo;
 				property.BindedType = classes.TryGetValue(property.XmlType, out classInfo) ? classInfo : null;
@@ -63,7 +63,7 @@ namespace SevenDigital.Parsing.XsdToObject
 
 		private void CleanUnknownClasses(ClassInfo classInfo, IDictionary<string, ClassInfo> classes)
 		{
-			foreach (var property in classInfo.Elements.Where(property => !classes.ContainsKey(property.XmlType)))
+			foreach (var property in classInfo.AllMembers.Where(property => !classes.ContainsKey(property.XmlType)))
 			{
 				property.XmlType = property.IsParsable
 					? property.XmlType

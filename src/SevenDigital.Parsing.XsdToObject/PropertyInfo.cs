@@ -5,10 +5,10 @@ namespace SevenDigital.Parsing.XsdToObject
 		private readonly ClassInfo _targetClass;
 		public string XmlName { get; set; }
 		public string XmlType { get; set; }
-		public bool IsParsable { get; set; }
 		public bool IsList { get; set; }
 		public ClassInfo BindedType { get; set; }
 		public bool IsElementValue { get; set; }
+		public bool IsParsable { get { return TypeUtils.IsParsable(XmlType); } }
 
 		public PropertyInfo(ClassInfo targetClass)
 		{
@@ -26,7 +26,7 @@ namespace SevenDigital.Parsing.XsdToObject
 
 		public string GetCodeType()
 		{
-			string type = BindedType != null ? BindedType.GetCodeName() : XmlType;
+			string type = BindedType != null ? BindedType.GetCodeName() : TypeUtils.ToCodeType(XmlType);
 			return !IsList ? type : string.Format("IList<{0}>", type);
 		}
 
@@ -57,7 +57,7 @@ namespace SevenDigital.Parsing.XsdToObject
 			{
 				return propertyEquals + string.Format("string.IsNullOrEmpty({0}) ? null : ({1}?){1}.Parse({0});",
 				propertyInitialisationStatment,
-				XmlType.TrimEnd('?')
+				GetCodeType().TrimEnd('?')
 				);
 			}
 			else

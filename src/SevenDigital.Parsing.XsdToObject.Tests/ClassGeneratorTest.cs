@@ -5,52 +5,52 @@ using NUnit.Framework;
 
 namespace SevenDigital.Parsing.XsdToObject.Tests
 {
-    [TestFixture]
-    public class ClassGeneratorTest
-    {
-        private IEnumerable<ClassInfo> _classes;
+	[TestFixture]
+	public class ClassGeneratorTest
+	{
+		private IEnumerable<ClassInfo> _classes;
 
-        [SetUp]
-        public void SetUp()
-        {
-            var generator = new ClassGenerator();
+		[SetUp]
+		public void SetUp()
+		{
+			var generator = new ClassGenerator();
 
-            using (Stream schemaStream = File.OpenRead(Path.Combine("res", "schema.xsd")))
-                generator.Parse(schemaStream);
+			using (Stream schemaStream = File.OpenRead(Path.Combine("res", "schema.xsd")))
+				generator.Parse(schemaStream);
 
-            _classes = generator.Generate();
-        }
+			_classes = generator.Generate();
+		}
 
-        [Test]
-        public void ShouldHaveVehicles()
-        {
-            ClassInfo vehicle = _classes.Single(c => c.XmlName == "vehicles");
-            Assert.That(vehicle.Elements.Count, Is.EqualTo(1));
-            GeneratorAssertHelper.AssertBindedProperty(vehicle, "car", "car", true, "Cars", "IList<Car>");
-        }
+		[Test]
+		public void ShouldHaveVehicles()
+		{
+			ClassInfo vehicle = _classes.Single(c => c.XmlName == "vehicles");
+			Assert.That(vehicle.Elements.Count, Is.EqualTo(1));
+			GeneratorAssertHelper.AssertBindedProperty(vehicle, "car", "car", true, "Cars", "IList<Car>");
+		}
 
-        [Test]
-        public void ShouldHaveCar()
-        {
-            ClassInfo car = _classes.Single(c => c.XmlName == "car");
+		[Test]
+		public void ShouldHaveCar()
+		{
+			ClassInfo car = _classes.Single(c => c.XmlName == "car");
 
 			Assert.That(car.Elements.Count, Is.EqualTo(4));
-            GeneratorAssertHelper.AssertStringProperty(car, "brand", false, "Brand");
-            GeneratorAssertHelper.AssertBindedProperty(car, "color", "color", false, "Color", "Color");
+			GeneratorAssertHelper.AssertStringProperty(car, "brand", false, "Brand");
+			GeneratorAssertHelper.AssertBindedProperty(car, "color", "color", false, "Color", "Color");
 			GeneratorAssertHelper.AssertBindedProperty(car, "manufacturer", "manufacturerName", false, "Manufacturer", "ManufacturerName");
-			GeneratorAssertHelper.AssertProperty(car, "productionDate", "DateTime?", false, "ProductionDate", "DateTime?",false);
-        }
+			GeneratorAssertHelper.AssertProperty(car, "productionDate", "date", false, "ProductionDate", "DateTime?", false);
+		}
 
-        [Test]
-        public void ShouldHaveColor()
-        {
-            ClassInfo color = _classes.Single(c => c.XmlName == "color");
-            Assert.That(color.Elements.Count, Is.EqualTo(3));
+		[Test]
+		public void ShouldHaveColor()
+		{
+			ClassInfo color = _classes.Single(c => c.XmlName == "color");
+			Assert.That(color.Elements.Count, Is.EqualTo(3));
 
-            GeneratorAssertHelper.AssertStringProperty(color, "hue", false, "Hue");
-            GeneratorAssertHelper.AssertStringProperty(color, "rgb", false, "Rgb");
-            GeneratorAssertHelper.AssertBindedProperty(color, "description", "colorDescription", false, "Description", "ColorDescription");
-        }
+			GeneratorAssertHelper.AssertStringProperty(color, "hue", false, "Hue");
+			GeneratorAssertHelper.AssertStringProperty(color, "rgb", false, "Rgb");
+			GeneratorAssertHelper.AssertBindedProperty(color, "description", "colorDescription", false, "Description", "ColorDescription");
+		}
 
 		[Test]
 		public void Title_should_have_TitleType_property()
@@ -58,7 +58,7 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
 			ClassInfo title = _classes.Single(c => c.XmlName == "colorDescription");
 			Assert.That(title.Elements.Count, Is.EqualTo(2));
 
-			Assert.That(title.Attributes.Select(a=>a.XmlName), Contains.Item("descriptionType"));
+			Assert.That(title.Attributes.Select(a => a.XmlName), Contains.Item("descriptionType"));
 		}
 
 		[Test]
@@ -67,24 +67,24 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
 			ClassInfo labelName = _classes.Single(c => c.XmlName == "manufacturerName");
 			Assert.That(labelName.Attributes.Count, Is.EqualTo(2));
 
-			Assert.That(labelName.Attributes.Select(a=>a.XmlName), Contains.Item("nameType"));
+			Assert.That(labelName.Attributes.Select(a => a.XmlName), Contains.Item("nameType"));
 		}
 
 
-        [Test]
-        public void ShouldVechiclesCarPropertyHaveBindedType()
-        {
-            ClassInfo vehicle = _classes.Single(c => c.XmlName == "vehicles");
-            Assert.That(vehicle.Elements.Single(p => p.XmlName == "car").BindedType,
-                Is.EqualTo(_classes.Single(c => c.XmlName == "car")));
-        }
+		[Test]
+		public void ShouldVechiclesCarPropertyHaveBindedType()
+		{
+			ClassInfo vehicle = _classes.Single(c => c.XmlName == "vehicles");
+			Assert.That(vehicle.Elements.Single(p => p.XmlName == "car").BindedType,
+				Is.EqualTo(_classes.Single(c => c.XmlName == "car")));
+		}
 
-        [Test]
-        public void ShouldCarColorPropertyHaveBindedType()
-        {
-            ClassInfo car = _classes.Single(c => c.XmlName == "car");
-            Assert.That(car.Elements.Single(p => p.XmlName == "color").BindedType,
-                Is.EqualTo(_classes.Single(c => c.XmlName == "color")));
-        }
-    }
+		[Test]
+		public void ShouldCarColorPropertyHaveBindedType()
+		{
+			ClassInfo car = _classes.Single(c => c.XmlName == "car");
+			Assert.That(car.Elements.Single(p => p.XmlName == "color").BindedType,
+				Is.EqualTo(_classes.Single(c => c.XmlName == "color")));
+		}
+	}
 }
