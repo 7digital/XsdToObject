@@ -32,12 +32,12 @@ namespace SevenDigital.Parsing.XsdToObject
 			return finalClasses;
 		}
 
-		private void RenameClassIfNecesarry(ClassInfo classInfo, List<ClassInfo> classes)
+		private void RenameClassIfNecesarry(ClassInfo classInfo, List<ClassInfo> existingClasses)
 		{
 			int suffix = 0;
 			while (true)
 			{
-				if (!classes.Any(c => (c.XmlName == classInfo.XmlName) && (c.NameSuffix == suffix)))
+				if (!existingClasses.Any(c => (c.XmlName == classInfo.XmlName) && (c.NameSuffix == suffix)))
 				{
 					classInfo.NameSuffix = suffix;
 					return;

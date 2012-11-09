@@ -16,9 +16,9 @@ namespace SevenDigital.Parsing.XsdToObject
 			string nsCode = GenerateNSCode(schema.TargetNamespace ?? "");
 
 			foreach (var elem in schema.Items.OfType<XmlSchemaElement>())
-				GenerateElement(elem, nsCode);
+				ParseElement(elem, nsCode);
 			foreach (var complexType in schema.Items.OfType<XmlSchemaComplexType>())
-				GenerateType(complexType, complexType.Name, nsCode);
+				ParseType(complexType, complexType.Name, nsCode);
 		}
 
 		public IDictionary<string, ClassInfo> GetParsedClasses()
@@ -33,10 +33,10 @@ namespace SevenDigital.Parsing.XsdToObject
 			return string.Format("{0}#", ns.GetHashCode());
 		}
 
-		private bool GenerateType(XmlSchemaComplexType type, string name, string nsCode)
+		private bool ParseType(XmlSchemaComplexType type, string name, string nsCode)
 		{
 			var classInfo = new ClassInfo { XmlName = name };
-			GenerateComplex(classInfo, type, nsCode);
+			ParseComplex(classInfo, type, nsCode);
 
 			if (classInfo.Elements.Count == 0 && classInfo.Attributes.Count == 0)
 				return false;
@@ -45,15 +45,15 @@ namespace SevenDigital.Parsing.XsdToObject
 			return true;
 		}
 
-		private bool GenerateElement(XmlSchemaElement elem, string nsCode)
+		private bool ParseElement(XmlSchemaElement elem, string nsCode)
 		{
 			return (elem.SchemaType is XmlSchemaComplexType) &&
-			       GenerateType((XmlSchemaComplexType)elem.SchemaType, elem.Name, nsCode);
+			       ParseType((XmlSchemaComplexType)elem.SchemaType, elem.Name, nsCode);
 		}
 
-		private void GenerateComplex(ClassInfo classInfo, XmlSchemaComplexType complex, string nsCode)
+		private void ParseComplex(ClassInfo classInfo, XmlSchemaComplexType complex, string nsCode)
 		{
-			GenerateParticle(classInfo, complex.Particle, nsCode);
+			ParseParticle(classInfo, complex.Particle, nsCode);
 
 			if (complex.Attributes.Count > 0)
 				AddAttributes(classInfo, complex.Attributes);
@@ -90,9 +90,7 @@ namespace SevenDigital.Parsing.XsdToObject
 		private void AddAttributes(ClassInfo classInfo, XmlSchemaObjectCollection attributes)
 		{
 			foreach (XmlSchemaAttribute attribute in attributes)
-			{
 				classInfo.Attributes.Add(PropertyFromAttribute(classInfo, attribute));
-			}
 		}
 
 		private PropertyInfo PropertyFromAttribute(ClassInfo classInfo, XmlSchemaAttribute attribute)
@@ -102,7 +100,7 @@ namespace SevenDigital.Parsing.XsdToObject
 			return prop;
 		}
 
-		private void GenerateParticle(ClassInfo classInfo, XmlSchemaParticle particle, string nsCode)
+		private void ParseParticle(ClassInfo classInfo, XmlSchemaParticle particle, string nsCode)
 		{
 			var group = particle as XmlSchemaGroupBase;
 			if (group == null)
@@ -112,13 +110,13 @@ namespace SevenDigital.Parsing.XsdToObject
 			foreach (XmlSchemaParticle groupMember in group.Items)
 			{
 				if (groupMember is XmlSchemaElement)
-					GenerateElementProperty(classInfo, (XmlSchemaElement)groupMember, (groupMember.MaxOccurs > 1) || isList, nsCode);
+					ParseElementProperty(classInfo, (XmlSchemaElement)groupMember, (groupMember.MaxOccurs > 1) || isList, nsCode);
 				else
-					GenerateParticle(classInfo, groupMember, nsCode);
+					ParseParticle(classInfo, groupMember, nsCode);
 			}
 		}
 
-		private void GenerateElementProperty(ClassInfo classInfo, XmlSchemaElement elem, bool isList, string nsCode)
+		private void ParseElementProperty(ClassInfo classInfo, XmlSchemaElement elem, bool isList, string nsCode)
 		{
 			var propInfo = new PropertyInfo(classInfo)
 			{
@@ -127,7 +125,7 @@ namespace SevenDigital.Parsing.XsdToObject
 				XmlType = ResolveTypeName(elem, nsCode)
 			};
 
-			var generatedElement = GenerateElement(elem, nsCode);
+			var generatedElement = ParseElement(elem, nsCode);
 			if (!generatedElement)
 				TrySettingElementType(elem.SchemaType, elem.SchemaTypeName, propInfo);
 
