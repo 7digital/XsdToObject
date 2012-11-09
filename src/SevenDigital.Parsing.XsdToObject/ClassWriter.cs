@@ -74,7 +74,7 @@ namespace SevenDigital.Parsing.XsdToObject
 		void WriteNullClass(ClassInfo classInfo)
 		{
 			_writer.WriteLine("\tinternal class Null{0} : {0}{1}\t{{", classInfo.GetCodeName(), Environment.NewLine);
-			GenerateThrowingProperties(classInfo);
+			WriteThrowingProperties(classInfo);
 			_writer.WriteLine("\t}}{0}", Environment.NewLine);
 		}
 
@@ -82,6 +82,7 @@ namespace SevenDigital.Parsing.XsdToObject
 		{
 			_writer.WriteLine("\tpublic partial class {0}{1}\t{{", classInfo.GetCodeName(), Environment.NewLine);
 
+			WriteImplicitStringCast(classInfo);
 			WriteAutoProperties(classInfo);
 			_writer.WriteLine();
 
@@ -127,24 +128,22 @@ namespace SevenDigital.Parsing.XsdToObject
 
 		void WriteAutoProperties(ClassInfo classInfo)
 		{
-			foreach (var property in classInfo.Elements.Union(classInfo.Attributes))
-			{
-				if (property.IsElementValue && property.XmlType == "string") WriteImplicitStringCast(classInfo);
-
+			foreach (var property in classInfo.AllMembers)
 				_writer.WriteLine("\t\tpublic virtual {0} {1} {{ get; set; }}", property.GetCodeType(), property.GetCodeName());
-			}
 		}
 
-		void GenerateThrowingProperties(ClassInfo classInfo)
+		void WriteThrowingProperties(ClassInfo classInfo)
 		{
-			foreach (PropertyInfo property in classInfo.Elements.Union(classInfo.Attributes))
-			{
-				_writer.WriteLine("\t\tpublic override {0} {1} {{ get {{ throw this.NullAccess(\"{1}\"); }} }}", property.GetCodeType(), property.GetCodeName());
-			}
+			foreach (PropertyInfo property in classInfo.AllMembers)
+				_writer.WriteLine("\t\tpublic override {0} {1} {{ get {{ throw this.NullAccess(\"{1}\"); }} }}",
+					property.GetCodeType(), property.GetCodeName());
 		}
 
 		void WriteImplicitStringCast(ClassInfo classInfo)
 		{
+			if (!classInfo.AllMembers.Any(m => m.IsElementValue && m.GetCodeType() == "string"))
+				return;
+
 			_writer.WriteLine("\t\tpublic override string ToString(){return Value;}");
 			_writer.WriteLine("\t\tpublic static implicit operator string(" + classInfo.GetCodeName() + " obj){return obj.Value;}");
 			_writer.WriteLine();
@@ -153,13 +152,9 @@ namespace SevenDigital.Parsing.XsdToObject
 		void WritePropertyInitialisationStatements(ClassInfo classInfo, StreamWriter writer)
 		{
 			foreach (PropertyInfo property in classInfo.Elements)
-			{
 				writer.WriteLine(property.InitialiseFromCollection("Elements"));
-			}
 			foreach (PropertyInfo property in classInfo.Attributes)
-			{
 				writer.WriteLine(property.InitialiseFromCollection("Attributes"));
-			}
 		}
 	}
 }
