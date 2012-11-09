@@ -61,27 +61,30 @@ namespace SevenDigital.Parsing.XsdToObject
 
 		private void AddExtensionAttributes(ClassInfo classInfo, XmlSchemaComplexType complex)
 		{
-			if (complex.ContentModel != null
-				&& complex.ContentModel.Content is XmlSchemaSimpleContentExtension)
+			if (complex.ContentModel == null || !(complex.ContentModel.Content is XmlSchemaSimpleContentExtension))
+				return;
+
+			var sce = complex.ContentModel.Content as XmlSchemaSimpleContentExtension;
+
+			if (sce.Attributes.Count == 0)
+				return;
+
+			AddAttributes(classInfo, sce.Attributes);
+			AddValueProperty(classInfo, sce);
+		}
+
+		private void AddValueProperty(ClassInfo classInfo, XmlSchemaSimpleContentExtension sce)
+		{
+			var propInfo = new PropertyInfo(classInfo)
 			{
-				var sce = complex.ContentModel.Content as XmlSchemaSimpleContentExtension;
+				IsList = false,
+				XmlName = "Value",
+				XmlType = ResolveSimpleTypeName(sce.BaseTypeName.Name),
+				IsElementValue = true
+			};
 
-				if (sce.Attributes.Count > 0)
-				{
-					AddAttributes(classInfo, sce.Attributes);
-
-					var propInfo = new PropertyInfo(classInfo)
-					{
-						IsList = false,
-						XmlName = "Value",
-						XmlType = ResolveSimpleTypeName(sce.BaseTypeName.Name),
-						IsElementValue = true
-					};
-
-					if (!classInfo.Elements.Contains(propInfo))
-						classInfo.Elements.Add(propInfo);
-				}
-			}
+			if (!classInfo.Elements.Contains(propInfo))
+				classInfo.Elements.Add(propInfo);
 		}
 
 		private void AddAttributes(ClassInfo classInfo, XmlSchemaObjectCollection attributes)
@@ -133,13 +136,11 @@ namespace SevenDigital.Parsing.XsdToObject
 
 		private string ResolveTypeName(XmlSchemaElement elem, string nsCode)
 		{
-			if (elem.SchemaType != null)
-			{
-				if (elem.SchemaType is XmlSchemaSimpleType)
-					return ResolveSimpleTypeName(elem.Name);
+			if (elem.SchemaType is XmlSchemaSimpleType)
+				return ResolveSimpleTypeName(elem.Name);
 
+			if (elem.SchemaType != null)
 				return ResolveTypeName(elem.Name, nsCode);
-			}
 
 			if (!elem.SchemaTypeName.IsEmpty)
 				return ResolveTypeName(elem.SchemaTypeName);
