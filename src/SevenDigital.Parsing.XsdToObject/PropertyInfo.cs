@@ -30,52 +30,6 @@ namespace SevenDigital.Parsing.XsdToObject
 			return !IsList ? type : string.Format("IList<{0}>", type);
 		}
 
-		public string InitialiseFromCollection(string collectionName)
-		{
-			var propertyEquals = string.Format("\t\t\t{0} = ", GetCodeName());
-			var accessorMethod = "SingleOrDefault()";
-			if (BindedType != null)
-				accessorMethod = string.Format("SingleOrDefault() ?? new Null{0}()", GetCodeType());
-			if (IsList)
-				accessorMethod = "ToList()";
-
-			string propertyInitialisationStatment;
-			if (IsElementValue)
-			{
-				propertyInitialisationStatment = "element.Value";
-			}
-			else
-			{
-				propertyInitialisationStatment = string.Format("element.{3}().Where(e => e.Name == \"{0}\").Select(e => {1}).{2}",
-					XmlName,
-					XElementToValue("e"),
-					accessorMethod,
-					collectionName
-					);
-			}
-			if (IsParsable)
-			{
-				return propertyEquals + string.Format("string.IsNullOrEmpty({0}) ? null : ({1}?){1}.Parse({0});",
-				propertyInitialisationStatment,
-				GetCodeType().TrimEnd('?')
-				);
-			}
-			else
-			{
-				propertyInitialisationStatment = propertyEquals + propertyInitialisationStatment;
-			}
-
-			propertyInitialisationStatment += ";";
-			return propertyInitialisationStatment;
-		}
-
-		string XElementToValue(string varName)
-		{
-			return BindedType != null
-				? string.Format("new {0}({1})", BindedType.GetCodeName(), varName)
-				: string.Format("{0}.Value", varName);
-		}
-
 		public override string ToString()
 		{
 			return string.Format("XmlType: {0}, XmlName: {1}, IsList: {2}, IsElementValue: {3}", XmlType, XmlName, IsList, IsElementValue);

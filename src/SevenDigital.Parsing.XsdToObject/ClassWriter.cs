@@ -15,27 +15,6 @@ namespace SevenDigital.Parsing.XsdToObject
 			WriteNamespace(namespaceName);
 		}
 
-		void WriteNamespace(string namespaceName)
-		{
-			_writer.WriteLine("namespace {0}{1}{{", namespaceName, Environment.NewLine);
-		}
-
-		void WriteNamespaceEnd()
-		{
-			_writer.Write("}");
-		}
-
-		void WriteUsings()
-		{
-			_writer.WriteLine("using System;");
-			_writer.WriteLine("using System.Collections.Generic;");
-			_writer.WriteLine("using System.Linq;");
-			_writer.WriteLine("using System.Xml.Linq;");
-			_writer.WriteLine("#pragma warning disable 660,661");
-
-			_writer.WriteLine();
-		}
-
 		public void Dispose()
 		{
 			if (_writer == null)
@@ -46,7 +25,34 @@ namespace SevenDigital.Parsing.XsdToObject
 			_writer = null;
 		}
 
-		void WriteUtilityClasses()
+		public void Write(ClassInfo classInfo)
+		{
+			WriteOriginalClass(classInfo);
+			WriteNullClass(classInfo);
+		}
+
+		private void WriteNamespace(string namespaceName)
+		{
+			_writer.WriteLine("namespace {0}{1}{{", namespaceName, Environment.NewLine);
+		}
+
+		private void WriteNamespaceEnd()
+		{
+			_writer.Write("}");
+		}
+
+		private void WriteUsings()
+		{
+			_writer.WriteLine("using System;");
+			_writer.WriteLine("using System.Collections.Generic;");
+			_writer.WriteLine("using System.Linq;");
+			_writer.WriteLine("using System.Xml.Linq;");
+			_writer.WriteLine("#pragma warning disable 660,661");
+
+			_writer.WriteLine();
+		}
+
+		private void WriteUtilityClasses()
 		{
 			_writer.WriteLine(@"
 	internal static class Utils
@@ -65,20 +71,14 @@ namespace SevenDigital.Parsing.XsdToObject
 	}");
 		}
 
-		public void Write(ClassInfo classInfo)
-		{
-			WriteOriginalClass(classInfo);
-			WriteNullClass(classInfo);
-		}
-
-		void WriteNullClass(ClassInfo classInfo)
+		private void WriteNullClass(ClassInfo classInfo)
 		{
 			_writer.WriteLine("\tinternal class Null{0} : {0}{1}\t{{", classInfo.GetCodeName(), Environment.NewLine);
 			WriteThrowingProperties(classInfo);
 			_writer.WriteLine("\t}}{0}", Environment.NewLine);
 		}
 
-		void WriteOriginalClass(ClassInfo classInfo)
+		private void WriteOriginalClass(ClassInfo classInfo)
 		{
 			_writer.WriteLine("\tpublic partial class {0}{1}\t{{", classInfo.GetCodeName(), Environment.NewLine);
 
@@ -93,7 +93,7 @@ namespace SevenDigital.Parsing.XsdToObject
 			_writer.WriteLine("\t}}{0}", Environment.NewLine);
 		}
 
-		void WriteEqualityMembers(ClassInfo classInfo)
+		private void WriteEqualityMembers(ClassInfo classInfo)
 		{
 			_writer.WriteLine(
 @"		public static bool operator ==({0} left, {0} right)
@@ -107,39 +107,39 @@ namespace SevenDigital.Parsing.XsdToObject
 		}}", classInfo.GetCodeName());
 		}
 
-		void WriteConstructors(ClassInfo classInfo)
+		private void WriteConstructors(ClassInfo classInfo)
 		{
 			WriteXElementConstructor(classInfo, _writer);
 			_writer.WriteLine();
 			WriteEmptyConstructor(classInfo);
 		}
 
-		void WriteEmptyConstructor(ClassInfo classInfo)
+		private void WriteEmptyConstructor(ClassInfo classInfo)
 		{
 			_writer.WriteLine("\t\tpublic {0}(){1}\t\t{{ }}", classInfo.GetCodeName(), Environment.NewLine);
 		}
 
-		void WriteXElementConstructor(ClassInfo classInfo, StreamWriter writer)
+		private void WriteXElementConstructor(ClassInfo classInfo, StreamWriter writer)
 		{
 			writer.WriteLine("\t\tpublic {0}(XElement element){1}\t\t{{", classInfo.GetCodeName(), Environment.NewLine);
-			WritePropertyInitialisationStatements(classInfo, writer);
+			WritePropertyInitializationStatements(classInfo, writer);
 			writer.WriteLine("\t\t}");
 		}
 
-		void WriteAutoProperties(ClassInfo classInfo)
+		private void WriteAutoProperties(ClassInfo classInfo)
 		{
 			foreach (var property in classInfo.AllMembers)
 				_writer.WriteLine("\t\tpublic virtual {0} {1} {{ get; set; }}", property.GetCodeType(), property.GetCodeName());
 		}
 
-		void WriteThrowingProperties(ClassInfo classInfo)
+		private void WriteThrowingProperties(ClassInfo classInfo)
 		{
 			foreach (PropertyInfo property in classInfo.AllMembers)
 				_writer.WriteLine("\t\tpublic override {0} {1} {{ get {{ throw this.NullAccess(\"{1}\"); }} }}",
 					property.GetCodeType(), property.GetCodeName());
 		}
 
-		void WriteImplicitStringCast(ClassInfo classInfo)
+		private void WriteImplicitStringCast(ClassInfo classInfo)
 		{
 			if (!classInfo.AllMembers.Any(m => m.IsElementValue && m.GetCodeType() == "string"))
 				return;
@@ -149,12 +149,63 @@ namespace SevenDigital.Parsing.XsdToObject
 			_writer.WriteLine();
 		}
 
-		void WritePropertyInitialisationStatements(ClassInfo classInfo, StreamWriter writer)
+		private void WritePropertyInitializationStatements(ClassInfo classInfo, StreamWriter writer)
 		{
 			foreach (PropertyInfo property in classInfo.Elements)
-				writer.WriteLine(property.InitialiseFromCollection("Elements"));
+				WritePropertyInitialization(writer, property, "Elements");
 			foreach (PropertyInfo property in classInfo.Attributes)
-				writer.WriteLine(property.InitialiseFromCollection("Attributes"));
+				WritePropertyInitialization(writer, property, "Attributes");
+		}
+
+		private void WritePropertyInitialization(StreamWriter writer, PropertyInfo property, string collectionName)
+		{
+			if (property.IsElementValue)
+				WriteValuePropertyInitialization(writer, property);
+			else
+				writer.WriteLine("\t\t\t{0} = {1}.{2};", property.GetCodeName(), GetPropertyValueRetriever(property, collectionName), GetPropertyValueAccessorMethod(property));
+		}
+
+		private void WriteValuePropertyInitialization(StreamWriter writer, PropertyInfo property)
+		{
+			var instanceCreation = property.IsParsable
+				? GetParsedPropertyValue(property,"element")
+				: "element.Value";
+
+			writer.WriteLine("\t\t\t{0} = {1};", property.GetCodeName(), instanceCreation);
+		}
+
+		private string GetPropertyValueRetriever(PropertyInfo property, string collectionName)
+		{
+			string instanceCreation = property.IsParsable
+				? GetParsedPropertyValue(property, "e")
+				: GetXElementToPropertyValue(property,"e");
+
+			return string.Format("element.{0}().Where(e => e.Name == \"{1}\").Select(e => {2})",
+				collectionName,
+				property.XmlName,
+				instanceCreation);
+		}
+
+		private static string GetParsedPropertyValue(PropertyInfo property, string variableName)
+		{
+			return string.Format("string.IsNullOrEmpty({0}.Value) ? ({1})null : {2}.Parse({0}.Value)", variableName, property.GetCodeType(), property.GetCodeType().TrimEnd('?'));
+		}
+
+		private string GetPropertyValueAccessorMethod(PropertyInfo property)
+		{
+			var accessorMethod = "SingleOrDefault()";
+			if (property.BindedType != null)
+				accessorMethod = string.Format("SingleOrDefault() ?? new Null{0}()", property.GetCodeType());
+			if (property.IsList)
+				accessorMethod = "ToList()";
+			return accessorMethod;
+		}
+
+		private string GetXElementToPropertyValue(PropertyInfo property, string varName)
+		{
+			return property.BindedType != null
+				? string.Format("new {0}({1})", property.BindedType.GetCodeName(), varName)
+				: string.Format("{0}.Value", varName);
 		}
 	}
 }
