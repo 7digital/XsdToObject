@@ -48,7 +48,7 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
 			Assert.That(color.Elements.Count, Is.EqualTo(3));
 
 			GeneratorAssertHelper.AssertStringProperty(color, "hue", false, "Hue");
-			GeneratorAssertHelper.AssertStringProperty(color, "rgb", false, "Rgb");
+			GeneratorAssertHelper.AssertProperty(color, "rgb", "decimal", false, "Rgb", "decimal?", false);
 			GeneratorAssertHelper.AssertBindedProperty(color, "description", "colorDescription", false, "Description", "ColorDescription");
 		}
 

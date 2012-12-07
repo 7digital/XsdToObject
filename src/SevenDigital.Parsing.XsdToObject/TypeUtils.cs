@@ -9,6 +9,7 @@ namespace SevenDigital.Parsing.XsdToObject
 			{"boolean","bool?"},
 			{"integer","int?"},
 			{"int","int?"},
+			{"decimal","decimal?"},
 			{"dateTime","DateTime?"},
 			{"date","DateTime?"}
 		};

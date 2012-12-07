@@ -15,7 +15,7 @@
     <brand>Honda</brand>
     <color>
       <hue>red</hue>
-      <rgb>0xff0000</rgb>      
+      <rgb>16711680</rgb>      
     </color>
     <manufacturer>UK Manufacturing Ltd</manufacturer>
   </car>
