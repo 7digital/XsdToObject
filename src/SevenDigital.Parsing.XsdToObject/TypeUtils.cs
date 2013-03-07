@@ -1,30 +1,43 @@
+using System;
 using System.Collections.Generic;
 
 namespace SevenDigital.Parsing.XsdToObject
 {
 	public static class TypeUtils
 	{
-		private static readonly IDictionary<string, string> _parsableTypesMap = new Dictionary<string, string>
+		private static readonly IDictionary<string, ParsableType> _parsableTypesMap = new Dictionary<string, ParsableType>();
+
+		static TypeUtils()
 		{
-			{"boolean","bool?"},
-			{"integer","int?"},
-			{"int","int?"},
-			{"decimal","decimal?"},
-			{"dateTime","DateTime?"},
-			{"date","DateTime?"}
-		};
+			AddType("boolean", "bool?", typeof(bool));
+			AddType("integer", "int?", typeof(int));
+			AddType("int", "int?", typeof(int));
+			AddType("decimal", "decimal?", typeof(decimal));
+			AddType("dateTime", "DateTime?", typeof(DateTime));
+			AddType("date", "DateTime?", typeof(DateTime));
+		}
+
+		private static void AddType(string xmlTypeName, string codeTypeName, Type netType)
+		{
+			_parsableTypesMap.Add(xmlTypeName, new ParsableType(xmlTypeName, codeTypeName, netType));
+		}
 
 		public static bool IsParsable(string xmlType)
 		{
 			return _parsableTypesMap.ContainsKey(xmlType.ToLower());
 		}
 
-		public static string ToCodeType(string xmlType)
+		public static ParsableType GetParsableType(string xmlType)
 		{
-			string result;
+			return _parsableTypesMap[xmlType];
+		}
+
+		public static string ToNetTypeName(string xmlType)
+		{
+			ParsableType result;
 			return _parsableTypesMap.TryGetValue(xmlType.ToLower(), out result)
-				       ? result
-				       : xmlType;
+				? result.NetTypeName
+				: xmlType;
 		}
 
 		public static bool IsSimpleType(string xmlType)

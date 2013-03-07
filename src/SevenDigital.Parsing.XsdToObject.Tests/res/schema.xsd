@@ -12,11 +12,12 @@
 	  <xs:element name="brand" type="xs:string" minOccurs="0" />
 	  <xs:element name="productionDate" type="xs:date" minOccurs="0" />
 	  <xs:element name="manufacturer" type="manufacturerName" minOccurs="0" />
+	  <xs:element name="modelVersion" type="xs:decimal" />
 	  <xs:element name="color" minOccurs="1" maxOccurs="1">
 		<xs:complexType>
 		  <xs:sequence>
 			<xs:element name="hue" type="xs:string" minOccurs="0" />
-			<xs:element name="rgb" type="xs:decimal" minOccurs="0" />
+			<xs:element name="rgb" type="xs:int" minOccurs="0" />
 			<xs:element name="description" type="colorDescription" minOccurs="0" />        
 		  </xs:sequence>
 		</xs:complexType>

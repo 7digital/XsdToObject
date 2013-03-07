@@ -45,6 +45,7 @@ namespace SevenDigital.Parsing.XsdToObject
 		{
 			_writer.WriteLine("using System;");
 			_writer.WriteLine("using System.Collections.Generic;");
+			_writer.WriteLine("using System.Globalization;");
 			_writer.WriteLine("using System.Linq;");
 			_writer.WriteLine("using System.Xml.Linq;");
 			_writer.WriteLine("#pragma warning disable 660,661");
@@ -168,7 +169,7 @@ namespace SevenDigital.Parsing.XsdToObject
 		private void WriteValuePropertyInitialization(StreamWriter writer, PropertyInfo property)
 		{
 			var instanceCreation = property.IsParsable
-				? GetParsedPropertyValue(property,"element")
+				? GetParsedPropertyValue(property, "element")
 				: "element.Value";
 
 			writer.WriteLine("\t\t\t{0} = {1};", property.GetCodeName(), instanceCreation);
@@ -178,7 +179,7 @@ namespace SevenDigital.Parsing.XsdToObject
 		{
 			string instanceCreation = property.IsParsable
 				? GetParsedPropertyValue(property, "e")
-				: GetXElementToPropertyValue(property,"e");
+				: GetXElementToPropertyValue(property, "e");
 
 			return string.Format("element.{0}().Where(e => e.Name == \"{1}\").Select(e => {2})",
 				collectionName,
@@ -188,7 +189,12 @@ namespace SevenDigital.Parsing.XsdToObject
 
 		private static string GetParsedPropertyValue(PropertyInfo property, string variableName)
 		{
-			return string.Format("string.IsNullOrEmpty({0}.Value) ? ({1})null : {2}.Parse({0}.Value)", variableName, property.GetCodeType(), property.GetCodeType().TrimEnd('?'));
+			var valueToParse = variableName + ".Value";
+
+			return string.Format("string.IsNullOrEmpty({0}) ? ({1})null : {2}",
+				valueToParse,
+				property.GetCodeType(),
+				TypeUtils.GetParsableType(property.XmlType).ConstructParseCall(valueToParse));
 		}
 
 		private string GetPropertyValueAccessorMethod(PropertyInfo property)

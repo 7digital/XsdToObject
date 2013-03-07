@@ -43,6 +43,7 @@
     <Compile Include="ClassParser.cs" />
     <Compile Include="ClassWriter.cs" />
     <Compile Include="NameUtils.cs" />
+    <Compile Include="ParsableType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyInfo.cs" />

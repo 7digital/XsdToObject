@@ -26,7 +26,7 @@ namespace SevenDigital.Parsing.XsdToObject
 
 		public string GetCodeType()
 		{
-			string type = BindedType != null ? BindedType.GetCodeName() : TypeUtils.ToCodeType(XmlType);
+			string type = BindedType != null ? BindedType.GetCodeName() : TypeUtils.ToNetTypeName(XmlType);
 			return !IsList ? type : string.Format("IList<{0}>", type);
 		}
 

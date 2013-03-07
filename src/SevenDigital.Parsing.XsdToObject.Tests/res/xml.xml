@@ -2,21 +2,23 @@
 <vehicles>
   <car>
     <brand>BMW</brand>
-	<productionDate>2008-10-25</productionDate>
+    <productionDate>2008-10-25</productionDate>
     <color>
       <hue>black</hue>
       <description descriptionType="thisIsTheType">
         <text>This is the text</text>
-      </description>      
+      </description>
     </color>
-	<manufacturer nameType="MajorType">BMW UK</manufacturer>
+    <manufacturer nameType="MajorType">BMW UK</manufacturer>
+    <modelVersion>2.1</modelVersion>
   </car>
   <car>
     <brand>Honda</brand>
     <color>
       <hue>red</hue>
-      <rgb>16711680</rgb>      
+      <rgb>16711680</rgb>
     </color>
     <manufacturer>UK Manufacturing Ltd</manufacturer>
+    <modelVersion>1.0</modelVersion>
   </car>
 </vehicles>
