@@ -33,7 +33,7 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
 			Assert.That(car.Color.Hue, Is.EqualTo("black"));
 			Assert.That(car.Color.Rgb, Is.Null);
 			Assert.That(car.ProductionDate, Is.EqualTo(new DateTime(2008, 10, 25)));
-
+			Assert.That(car.ExactProductionDate, Is.EqualTo(new DateTime(2002, 05, 30, 09, 30, 10, DateTimeKind.Utc)));
 			Assert.That(car.Color.Description.Text, Is.EqualTo("This is the text"));
 
 			Assert.That(car.Manufacturer.NameType, Is.EqualTo("MajorType"));

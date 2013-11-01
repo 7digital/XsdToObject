@@ -3,6 +3,7 @@
   <car>
     <brand>BMW</brand>
     <productionDate>2008-10-25</productionDate>
+    <exactProductionDate>2002-05-30T09:30:10Z</exactProductionDate>
     <color>
       <hue>black</hue>
       <description descriptionType="thisIsTheType">

@@ -5,7 +5,8 @@ namespace SevenDigital.Parsing.XsdToObject
 {
 	public static class TypeUtils
 	{
-		private static readonly IDictionary<string, ParsableType> _parsableTypesMap = new Dictionary<string, ParsableType>();
+		private static readonly IDictionary<string, ParsableType> _parsableTypesMap =
+			new Dictionary<string, ParsableType>(StringComparer.OrdinalIgnoreCase);
 
 		static TypeUtils()
 		{
@@ -13,7 +14,7 @@ namespace SevenDigital.Parsing.XsdToObject
 			AddType("integer", "int?", typeof(int));
 			AddType("int", "int?", typeof(int));
 			AddType("decimal", "decimal?", typeof(decimal));
-			AddType("dateTime", "DateTime?", typeof(DateTime));
+			AddType("datetime", "DateTime?", typeof(DateTime));
 			AddType("date", "DateTime?", typeof(DateTime));
 		}
 
@@ -24,7 +25,7 @@ namespace SevenDigital.Parsing.XsdToObject
 
 		public static bool IsParsable(string xmlType)
 		{
-			return _parsableTypesMap.ContainsKey(xmlType.ToLower());
+			return _parsableTypesMap.ContainsKey(xmlType);
 		}
 
 		public static ParsableType GetParsableType(string xmlType)

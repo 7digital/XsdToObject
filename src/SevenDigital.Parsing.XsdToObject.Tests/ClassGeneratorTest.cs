@@ -34,11 +34,12 @@ namespace SevenDigital.Parsing.XsdToObject.Tests
 		{
 			ClassInfo car = _classes.Single(c => c.XmlName == "car");
 
-			Assert.That(car.Elements.Count, Is.EqualTo(5));
+			Assert.That(car.Elements.Count, Is.EqualTo(6));
 			GeneratorAssertHelper.AssertStringProperty(car, "brand", false, "Brand");
 			GeneratorAssertHelper.AssertBindedProperty(car, "color", "color", false, "Color", "Color");
 			GeneratorAssertHelper.AssertBindedProperty(car, "manufacturer", "manufacturerName", false, "Manufacturer", "ManufacturerName");
 			GeneratorAssertHelper.AssertProperty(car, "productionDate", "date", false, "ProductionDate", "DateTime?", false);
+			GeneratorAssertHelper.AssertProperty(car, "exactProductionDate", "dateTime", false, "ExactProductionDate", "DateTime?", false);
 			GeneratorAssertHelper.AssertProperty(car, "modelVersion", "decimal", false, "ModelVersion", "decimal?", false);
 		}
 

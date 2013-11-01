@@ -47,6 +47,7 @@ namespace SevenDigital.Parsing.XsdToObject
 			_writer.WriteLine("using System.Collections.Generic;");
 			_writer.WriteLine("using System.Globalization;");
 			_writer.WriteLine("using System.Linq;");
+			_writer.WriteLine("using System.Xml;");
 			_writer.WriteLine("using System.Xml.Linq;");
 			_writer.WriteLine("#pragma warning disable 660,661");
 
