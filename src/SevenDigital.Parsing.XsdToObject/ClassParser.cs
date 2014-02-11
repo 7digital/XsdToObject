@@ -36,8 +36,7 @@ namespace SevenDigital.Parsing.XsdToObject
 
 		private void ParseType(XmlSchemaComplexType type, string name, string nsCode)
 		{
-			var classInfo = new ClassInfo { XmlName = name };
-			ParseComplex(classInfo, type, nsCode);
+			var classInfo = ParseComplex(type, name, nsCode);
 
 			if (classInfo.Elements.Count != 0 || classInfo.Attributes.Count != 0)
 				_classes.Add(nsCode + name, classInfo);
@@ -49,14 +48,28 @@ namespace SevenDigital.Parsing.XsdToObject
 				ParseType((XmlSchemaComplexType)elem.SchemaType, elem.Name, nsCode);
 		}
 
-		private void ParseComplex(ClassInfo classInfo, XmlSchemaComplexType complex, string nsCode)
+		private ClassInfo ParseComplex(XmlSchemaComplexType complex, string name, string nsCode)
 		{
+			var classInfo = new ClassInfo { XmlName = name };
 			ParseParticle(classInfo, complex.Particle, nsCode);
 
 			if (complex.Attributes.Count > 0)
 				AddAttributes(classInfo, complex.Attributes);
 
 			AddExtensionAttributes(classInfo, complex);
+			GenerateUniquePropertyNames(classInfo);
+			return classInfo;
+		}
+
+		private void GenerateUniquePropertyNames(ClassInfo classInfo)
+		{
+			var attributesToRename = classInfo.Attributes.Where(attribute => classInfo.Elements.Any(p => p.XmlName == attribute.XmlName)).ToList();
+			foreach (var attribute in attributesToRename)
+			{
+				classInfo.Attributes.Remove(attribute);
+				attribute.XmlName += "Attribute";
+				classInfo.Attributes.Add(attribute);
+			}
 		}
 
 		private void AddExtensionAttributes(ClassInfo classInfo, XmlSchemaComplexType complex)

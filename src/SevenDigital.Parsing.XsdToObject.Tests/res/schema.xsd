@@ -50,4 +50,11 @@
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+
+  <xs:complexType name="TypeWithElementAndAttribute">
+    <xs:sequence>
+      <xs:element name="PriceType" minOccurs="0" type="xs:string"/>
+    </xs:sequence>
+    <xs:attribute name="PriceType" type="xs:string" />
+  </xs:complexType>
 </xs:schema>
