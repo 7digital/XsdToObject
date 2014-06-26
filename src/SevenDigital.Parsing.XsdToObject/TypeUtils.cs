@@ -16,6 +16,7 @@ namespace SevenDigital.Parsing.XsdToObject
 			AddType("decimal", "decimal?", typeof(decimal));
 			AddType("datetime", "DateTime?", typeof(DateTime));
 			AddType("date", "DateTime?", typeof(DateTime));
+			AddType("ddex_IsoDate", "DateTime?", typeof(DateTime));
 		}
 
 		private static void AddType(string xmlTypeName, string codeTypeName, Type netType)
